@@ -161,28 +161,35 @@ def save_interview_to_file(interview_content, file_path):
     except Exception as e:
         print(f"Error saving interview questions: {e}")
 
+def extract_interviewer_lines(interview_content):
+    """Extracts only lines starting with 'Interviewer:'"""
+    return '\n'.join(line for line in interview_content.split('\n') 
+                    if line.startswith('Interviewer:'))
+
+def save_to_file(content, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            file.write(content)
+        print(f"Content saved to {file_path}")
+    except Exception as e:
+        print(f"Error saving file: {e}")
+
 if __name__ == "__main__":
     try:
-        # Extract text from resume directly
-        text, links = extract_text_and_links("Dhunna_R_40294791_CV_pdf.pdf")
+        # Step 1: Parse resume (silently)
+        resume = process_resume("Dhunna_R_40294791_CV_pdf.pdf")
         
-        # Create simple resume summary for interview generation
-        resume_summary = f"""
-        Resume Summary:
-        {text}
+        # Step 2: Generate interview
+        interview = generate_interview(resume)
         
-        Detected Links: {', '.join(links)}
-        """
+        # Step 3: Save full script
+        script_path = "/Applications/interbuu/resume/web/interview-practice/public/script.txt"
+        save_to_file(interview, script_path)
         
-        # Generate interview
-        interview = generate_interview({"resume_text": resume_summary})
-        
-        # Print the interview
-        print(interview)
-        
-        # Save to file
-        output_path = "/Applications/interbuu/resume/web/interview-practice/public/script.txt"
-        save_interview_to_file(interview, output_path)
+        # Step 4: Extract and save just interviewer questions
+        interviewer_lines = extract_interviewer_lines(interview)
+        questions_path = "/Applications/interbuu/resume/web/interview-practice/public/questions.txt"
+        save_to_file(interviewer_lines, questions_path)
         
     except Exception as e:
         print(f"Error: {str(e)}")

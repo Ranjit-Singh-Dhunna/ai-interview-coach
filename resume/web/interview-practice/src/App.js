@@ -113,7 +113,7 @@ function App() {
       utterance.pitch = 0.9;
     }
     
-    utterance.volume = Math.min(volume, 1.9); // Cap volume at 1.5 for safety
+    utterance.volume = Math.min(volume, 1.5); // Cap volume at 1.5 for safety
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = (e) => {
@@ -214,7 +214,7 @@ function App() {
           type="range"
           id="volume"
           min="0.5"
-          max="1.9"
+          max="1.5"
           step="0.1"
           value={volume}
           onChange={handleVolumeChange}

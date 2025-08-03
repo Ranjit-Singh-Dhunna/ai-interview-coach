@@ -1,0 +1,6 @@
+Interviewer: Could you walk us through your most significant project, 'Click2Bill'? What were the key components of this project and what was its impact?
+Interviewer: In your experience with 'Code Buddy', an AI-Powered Code Review Tool, what specific components did you work on and how did it impact the development process?
+Interviewer: Can you share an example of a complex problem you encountered in your previous roles and how you approached solving it using your problem-solving methodologies?
+Interviewer: How do you collaborate effectively within a team environment? Could you share an example of how you've successfully collaborated in the past?
+Interviewer: What are your career goals for the next 5 years? How do you see yourself growing within the company or in your field?
+Interviewer: To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?
