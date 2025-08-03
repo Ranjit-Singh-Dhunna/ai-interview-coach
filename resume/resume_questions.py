@@ -129,7 +129,7 @@ def generate_interview(resume_data: Dict):
         {resume_data}
         
         Start the interview with:
-        "Hello Ranjit Singh Dhunna, it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?"
+        "Hello [read name from data provided below], it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?"
         
         Then create 6-8 professional interview questions covering:
         - Technical skills and programming languages
@@ -141,21 +141,29 @@ def generate_interview(resume_data: Dict):
         End the interview with:
         "Thank you for taking the time to share your experiences with us today. To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?"
         
-        Format each question exactly like this:
+        Format each question EXACTLY like this:
         Interviewer: "[Your question here]"
         Answer me: (Provide helpful guidance on what to say)
         
-        Make sure to include "Answer me:" with helpful hints after each question.
+        Make sure to include "Answer me:" with helpful hints after each question and it should have no new line.
         """,
         input_variables=["resume_data"]
     )
     simple_chain = simple_prompt | llm
     return simple_chain.invoke({"resume_data": str(resume_data)})
 
+def save_interview_to_file(interview_content, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            file.write(interview_content)
+        print(f"Interview questions saved to {file_path}")
+    except Exception as e:
+        print(f"Error saving interview questions: {e}")
+
 if __name__ == "__main__":
     try:
         # Extract text from resume directly
-        text, links = extract_text_and_links("resume.pdf")
+        text, links = extract_text_and_links("Dhunna_R_40294791_CV_pdf.pdf")
         
         # Create simple resume summary for interview generation
         resume_summary = f"""
@@ -165,9 +173,15 @@ if __name__ == "__main__":
         Detected Links: {', '.join(links)}
         """
         
-        # Generate and print only interview questions
+        # Generate interview
         interview = generate_interview({"resume_text": resume_summary})
+        
+        # Print the interview
         print(interview)
+        
+        # Save to file
+        output_path = "/Applications/interbuu/resume/web/interview-practice/public/script.txt"
+        save_interview_to_file(interview, output_path)
         
     except Exception as e:
         print(f"Error: {str(e)}")

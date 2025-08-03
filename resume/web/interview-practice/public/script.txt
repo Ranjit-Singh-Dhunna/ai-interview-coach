@@ -1,0 +1,35 @@
+ Interviewer: "Hello Ranjit Singh Dhunna, it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?"
+
+Answer me: I am Ranjit Singh Dhunna, a computer engineering student at Concordia University, Montreal, QC, set to graduate in 2028. My background includes strong proficiency in various operating systems such as Windows 365, Linux, Mobile, and MacOS. I have also honed my skills in multiple programming languages including Java, JavaScript, Python, C++, HTML, CSS, and more. I am actively engaged in the tech community through platforms like GitHub, LeetCode, and LinkedIn.
+
+Interviewer: Can you tell me about your technical skills in more detail? Which programming languages are you most proficient in and why do you consider them important for this role?
+
+Answer me: I am particularly strong in Java, JavaScript, Python, and C++ due to their versatility and widespread use across various domains. For instance, Java is a cornerstone of Android app development and backend services, while Python is ideal for data analysis and machine learning applications. JavaScript is essential for web development, and C++ offers superior performance for high-demand applications.
+
+Interviewer: Could you walk me through your project Click2Bill? What were the key components, and what challenges did you encounter during its development?
+
+Answer me: Click2Bill was an automated invoice & service request system that I built using Google Sheets, Google Apps Script, HTML/CSS/JavaScript. The main components included a user form for submissions, backend logic for generating unique invoice numbers and auto-filling invoice templates, converting them into PDFs, sending emails, and logging transactions automatically. Challenges I faced primarily involved optimizing the system for seamless integration and ensuring robustness to handle various use cases.
+
+Interviewer: Let's discuss your project Code Buddy. Can you describe its purpose and the technologies used to develop it?
+
+Answer me: Code Buddy is an AI-powered code review tool that offers instant feedback through a clean, syntax-highlighted interface. It was built using React for the frontend and Node.js/Express for the backend to route user submissions through an AI API for automated review. I also utilized technologies like Vite, PrismJS, react-markdown, and ESLint during its development.
+
+Interviewer: Could you explain how you applied Kaizen or continuous improvement in your project DRIP GENIUS? What were the results of these efforts?
+
+Answer me: In DRIP GENIUS, I incorporated continuous improvement by refining the system's color analysis and Gemini AI-based outfit recommendations. For instance, I implemented K-means clustering for better color analysis, resulting in more accurate outfit pairings that match user style and color preferences.
+
+Interviewer: How do you approach problem-solving, and can you provide an example from your experience?
+
+Answer me: My problem-solving strategy involves a systematic process of identifying the issue at hand, researching potential solutions, evaluating the pros and cons of each option, and implementing the best solution. For instance, during the development of Click2Bill, I faced challenges in automating the invoice number generation. After extensive research, I found a solution using Google Apps Script functions that allowed me to create unique invoice numbers on the fly.
+
+Interviewer: How do you collaborate effectively with your team members, and what strategies do you use for clear communication?
+
+Answer me: Effective collaboration is crucial in any project. I believe in active listening, respecting others' opinions, and maintaining open and honest communication channels. In terms of clear communication, I prioritize using concise and straightforward language, ensuring everyone understands the project goals, tasks, and timelines clearly.
+
+Interviewer: What are your career goals for the next 5 years, and how does this position align with those objectives?
+
+Answer me: My long-term goal is to work in a dynamic tech company where I can continue learning and growing as a software engineer while contributing meaningful solutions. This position presents an excellent opportunity for me to gain valuable experience, work on cutting-edge projects, and collaborate with talented professionals in the industry.
+
+Interviewer: To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?
+
+Answer me: Yes, I would like to know more about the company culture, opportunities for professional development, and the team dynamic in this role. Also, I am curious about the types of projects that I might be working on if selected for this position.
