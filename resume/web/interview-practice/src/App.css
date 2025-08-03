@@ -124,3 +124,406 @@ button:disabled {
     width: 100%;
   }
 }
+
+
+/* Add these to your existing App.css */
+.interviewer {
+  position: relative;
+  padding-right: 80px; /* Space for the speak button */
+}
+
+.speak-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.speak-button:hover:not(:disabled) {
+  background-color: #27ae60;
+}
+
+.speak-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.voice-warning {
+  color: #e67e22;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+
+.interview-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interviewer {
+  position: relative;
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding-right: 80px;
+}
+
+.answer {
+  color: #27ae60;
+  margin: 1.5rem 0;
+  white-space: pre-line;
+  line-height: 1.6;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #27ae60;
+}
+
+.buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+#proceed {
+  background-color: #3498db;
+  color: white;
+}
+
+#proceed:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+#recommend {
+  background-color: #e67e22;
+  color: white;
+}
+
+#recommend:hover:not(:disabled) {
+  background-color: #d35400;
+}
+
+button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.progress {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #ecf0f1;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #3498db;
+  transition: width 0.3s ease;
+}
+
+.status {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.loading {
+  background-color: #fff9e6;
+  color: #e67e22;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #e74c3c;
+}
+
+.welcome-message {
+  margin: 2rem 0;
+  color: #7f8c8d;
+  font-style: italic;
+  text-align: center;
+}
+
+.speak-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.speak-button:hover:not(:disabled) {
+  background-color: #27ae60;
+}
+
+.speak-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.voice-warning {
+  color: #e67e22;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .interview-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .buttons {
+    flex-direction: column;
+  }
+  
+  button {
+    width: 100%;
+  }
+  
+  .interviewer {
+    padding-right: 0;
+    padding-bottom: 40px;
+  }
+  
+  .speak-button {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+
+.interview-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interviewer {
+  position: relative;
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding-right: 80px;
+}
+
+.answer {
+  color: #27ae60;
+  margin: 1.5rem 0;
+  white-space: pre-line;
+  line-height: 1.6;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #27ae60;
+}
+
+.buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+#proceed {
+  background-color: #3498db;
+  color: white;
+}
+
+#proceed:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+#recommend {
+  background-color: #e67e22;
+  color: white;
+}
+
+#recommend:hover:not(:disabled) {
+  background-color: #d35400;
+}
+
+button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.progress {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #ecf0f1;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #3498db;
+  transition: width 0.3s ease;
+}
+
+.status {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.loading {
+  background-color: #fff9e6;
+  color: #e67e22;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #e74c3c;
+}
+
+.welcome-message {
+  margin: 2rem 0;
+  color: #7f8c8d;
+  font-style: italic;
+  text-align: center;
+}
+
+.speak-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.speak-button:hover:not(:disabled) {
+  background-color: #27ae60;
+}
+
+.speak-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.voice-warning {
+  color: #e67e22;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.voice-controls {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.voice-controls label {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.voice-controls input[type="range"] {
+  width: 150px;
+}
+
+@media (max-width: 768px) {
+  .interview-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .buttons {
+    flex-direction: column;
+  }
+  
+  button {
+    width: 100%;
+  }
+  
+  .interviewer {
+    padding-right: 0;
+    padding-bottom: 40px;
+  }
+  
+  .speak-button {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 10px;
+    width: 100%;
+  }
+  
+  .voice-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

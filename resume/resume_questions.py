@@ -128,17 +128,18 @@ def generate_interview(resume_data: Dict):
         Generate a complete interview for this candidate:
         {resume_data}
         
-        Start the interview with:
+        Start the interview with something like:
         "Hello [read name from data provided below], it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?"
         
         Then create 6-8 professional interview questions covering:
         - Technical skills and programming languages
-        - Projects (Click2Bill, Code Buddy, DRIP GENIUS)
+        - Projects 
         - Problem-solving and methodologies
         - Teamwork and communication
         - Career goals and growth
+        - Add expresion in follow up questions
         
-        End the interview with:
+        End the interview with something like:
         "Thank you for taking the time to share your experiences with us today. To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?"
         
         Format each question EXACTLY like this:

@@ -1,35 +1,23 @@
  Interviewer: "Hello Ranjit Singh Dhunna, it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?"
+Answer me: I am Ranjit Singh Dhunna, a software engineering student at Concordia University, Montreal, QC. My professional background includes strong skills in OperaKng Systems, Windows 365, Linux, Mobile, MacOS, and various programming languages such as Java, JavaScript, Python, C++, HTML, CSS. I have also gained expertise in platforms like Git, Eclipse, VS Code, Curson, PyCharm, BlueJ, MongoDB, React.js, Node.js, Express.js, and Octave. Furthermore, I am proficient in methodologies like Lean Engineering/Manufacturing, Six Sigma, DMAIC, Agile and Scrum, Project Management, Kaizen or Continuous Improvement, and Change Management. I am fluent in English, Punjabi, Hindi, and Urdu languages.
 
-Answer me: I am Ranjit Singh Dhunna, a computer engineering student at Concordia University, Montreal, QC, set to graduate in 2028. My background includes strong proficiency in various operating systems such as Windows 365, Linux, Mobile, and MacOS. I have also honed my skills in multiple programming languages including Java, JavaScript, Python, C++, HTML, CSS, and more. I am actively engaged in the tech community through platforms like GitHub, LeetCode, and LinkedIn.
+Interviewer: "Could you elaborate on your experience with Java and Python programming languages?"
+Answer me: Yes, I have extensive experience with both Java and Python. In Java, I've developed complex applications using Object-Oriented Programming principles for data structures, algorithms, and web programming. In Python, I've worked on projects involving machine learning, AI, and data analysis.
 
-Interviewer: Can you tell me about your technical skills in more detail? Which programming languages are you most proficient in and why do you consider them important for this role?
+Interviewer: "Can you tell us more about your project 'Click2Bill: Automated Invoice & Service Request System'?"
+Answer me: Click2Bill is a fully automated invoicing system that I developed using Google Sheets, Google Apps Script, and HTML/CSS/JavaScript. This end-to-end workflow includes user form submission, billing, record storage, generating unique invoice numbers, auto-filling invoice templates with client data, converting them into PDFs, sending emails, and logging transactions automatically.
 
-Answer me: I am particularly strong in Java, JavaScript, Python, and C++ due to their versatility and widespread use across various domains. For instance, Java is a cornerstone of Android app development and backend services, while Python is ideal for data analysis and machine learning applications. JavaScript is essential for web development, and C++ offers superior performance for high-demand applications.
+Interviewer: "For your project 'Code Buddy: AI-Powered Code Review Tool', how did you implement the frontend and backend integration?"
+Answer me: I built the frontend using React, Vite, PrismJS, and react-markdown for live code editing and rendering. The backend was created in Node.js/Express to route user submissions through an AI API for automated review. I implemented responsive UI, clean JSON-based communication, ESLint, environment variable support, and a modular architecture for fast performance and future scalability.
 
-Interviewer: Could you walk me through your project Click2Bill? What were the key components, and what challenges did you encounter during its development?
+Interviewer: "How do you approach problem-solving and analysis in your projects?"
+Answer me: I follow a systematic approach to problem-solving, which includes understanding the problem, breaking it down into smaller components, researching solutions, evaluating potential options, selecting the best solution, implementing the solution, testing the implementation, and iterating if necessary.
 
-Answer me: Click2Bill was an automated invoice & service request system that I built using Google Sheets, Google Apps Script, HTML/CSS/JavaScript. The main components included a user form for submissions, backend logic for generating unique invoice numbers and auto-filling invoice templates, converting them into PDFs, sending emails, and logging transactions automatically. Challenges I faced primarily involved optimizing the system for seamless integration and ensuring robustness to handle various use cases.
+Interviewer: "Can you share an example of how you have demonstrated teamwork and communication skills in a project or group setting?"
+Answer me: I actively participated in hackathons such as @hack 2025 Hackathon and ConUHacks IX, where I worked collaboratively with my team members to explore various vulnerabilities in more than 30 different scenarios. These experiences helped me develop strong teamwork and communication skills.
 
-Interviewer: Let's discuss your project Code Buddy. Can you describe its purpose and the technologies used to develop it?
-
-Answer me: Code Buddy is an AI-powered code review tool that offers instant feedback through a clean, syntax-highlighted interface. It was built using React for the frontend and Node.js/Express for the backend to route user submissions through an AI API for automated review. I also utilized technologies like Vite, PrismJS, react-markdown, and ESLint during its development.
-
-Interviewer: Could you explain how you applied Kaizen or continuous improvement in your project DRIP GENIUS? What were the results of these efforts?
-
-Answer me: In DRIP GENIUS, I incorporated continuous improvement by refining the system's color analysis and Gemini AI-based outfit recommendations. For instance, I implemented K-means clustering for better color analysis, resulting in more accurate outfit pairings that match user style and color preferences.
-
-Interviewer: How do you approach problem-solving, and can you provide an example from your experience?
-
-Answer me: My problem-solving strategy involves a systematic process of identifying the issue at hand, researching potential solutions, evaluating the pros and cons of each option, and implementing the best solution. For instance, during the development of Click2Bill, I faced challenges in automating the invoice number generation. After extensive research, I found a solution using Google Apps Script functions that allowed me to create unique invoice numbers on the fly.
-
-Interviewer: How do you collaborate effectively with your team members, and what strategies do you use for clear communication?
-
-Answer me: Effective collaboration is crucial in any project. I believe in active listening, respecting others' opinions, and maintaining open and honest communication channels. In terms of clear communication, I prioritize using concise and straightforward language, ensuring everyone understands the project goals, tasks, and timelines clearly.
-
-Interviewer: What are your career goals for the next 5 years, and how does this position align with those objectives?
-
-Answer me: My long-term goal is to work in a dynamic tech company where I can continue learning and growing as a software engineer while contributing meaningful solutions. This position presents an excellent opportunity for me to gain valuable experience, work on cutting-edge projects, and collaborate with talented professionals in the industry.
+Interviewer: "What are your career goals and areas of growth that you'd like to focus on in the coming years?"
+Answer me: I aim to further my expertise in web development, AI, machine learning, and cybersecurity. I am eager to work on challenging projects that will allow me to grow and expand my skill set while making significant contributions to the team.
 
 Interviewer: To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?
-
-Answer me: Yes, I would like to know more about the company culture, opportunities for professional development, and the team dynamic in this role. Also, I am curious about the types of projects that I might be working on if selected for this position.
+Answer me: Yes, I would like to know more about the company's culture, growth opportunities, and projects I might be working on if selected for this position. Additionally, could you share some insights into the team dynamics and how new hires are integrated into existing projects?
