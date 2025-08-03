@@ -155,7 +155,7 @@ def generate_interview(resume_data: Dict):
 if __name__ == "__main__":
     try:
         # Extract text from resume directly
-        text, links = extract_text_and_links("Dhunna_R_40294791_CV_pdf.pdf")
+        text, links = extract_text_and_links("resume.pdf")
         
         # Create simple resume summary for interview generation
         resume_summary = f"""
