@@ -95,21 +95,21 @@ resume_prompt = PromptTemplate(
 # Interview generation prompt
 interview_prompt = PromptTemplate(
     template="""
-    As a professional interviewer, generate questions for:
+    Based on this resume data, generate professional interview questions:
     {resume_data}
     
-    Include:
-    1. Introduction
-    2. 4-6 technical questions
-    3. 3 behavioral questions 
-    4. 1-2 case studies
-    5. Closing
+    Create a comprehensive interview with:
+    1. Introduction question
+    2. 4-6 technical questions based on skills and projects
+    3. 3 behavioral questions about teamwork and problem-solving
+    4. 1-2 case studies related to the person's experience
+    5. Closing question
     
-    Format each question with:
-    Interviewer: "[question]"
-    answer me
+    Format each question exactly like this:
+    Interviewer: "[Your question here]"
+    Answer: (Provide a brief introduction about yourself and your career path)
     
-    Reference specific resume items and vary difficulty.
+    Make questions specific to the person's background, skills, and projects.
     """,
     input_variables=["resume_data"]
 )
@@ -123,19 +123,50 @@ def process_resume(pdf_path):
     return resume_chain.invoke({"resume_text": text, "hyperlinks": links})
 
 def generate_interview(resume_data: Dict):
-    interview_chain = interview_prompt | llm
-    return interview_chain.invoke({"resume_data": json.dumps(resume_data)})
+    simple_prompt = PromptTemplate(
+        template="""
+        Generate a complete interview for this candidate:
+        {resume_data}
+        
+        Start the interview with:
+        "Hello Ranjit Singh Dhunna, it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?"
+        
+        Then create 6-8 professional interview questions covering:
+        - Technical skills and programming languages
+        - Projects (Click2Bill, Code Buddy, DRIP GENIUS)
+        - Problem-solving and methodologies
+        - Teamwork and communication
+        - Career goals and growth
+        
+        End the interview with:
+        "Thank you for taking the time to share your experiences with us today. To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?"
+        
+        Format each question exactly like this:
+        Interviewer: "[Your question here]"
+        Answer me: (Provide helpful guidance on what to say)
+        
+        Make sure to include "Answer me:" with helpful hints after each question.
+        """,
+        input_variables=["resume_data"]
+    )
+    simple_chain = simple_prompt | llm
+    return simple_chain.invoke({"resume_data": str(resume_data)})
 
 if __name__ == "__main__":
     try:
-        # Step 1: Parse resume
-        resume = process_resume("Dhunna_R_40294791_CV_pdf.pdf")
-        print("Parsed Resume Data:")
-        print(json.dumps(resume, indent=2))
+        # Extract text from resume directly
+        text, links = extract_text_and_links("Dhunna_R_40294791_CV_pdf.pdf")
         
-        # Step 2: Generate interview
-        interview = generate_interview(resume)
-        print("\nGenerated Interview Questions:")
+        # Create simple resume summary for interview generation
+        resume_summary = f"""
+        Resume Summary:
+        {text}
+        
+        Detected Links: {', '.join(links)}
+        """
+        
+        # Generate and print only interview questions
+        interview = generate_interview({"resume_text": resume_summary})
         print(interview)
         
     except Exception as e:
