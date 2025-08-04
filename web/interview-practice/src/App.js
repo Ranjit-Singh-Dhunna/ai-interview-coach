@@ -15,6 +15,12 @@ function App() {
   const [audioURL, setAudioURL] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [resumeUploaded, setResumeUploaded] = useState(false);
   
   const synthRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -65,21 +71,20 @@ function App() {
     }
 
     const loadScript = async () => {
-    try {
-      const response = await fetch('/script.txt');
-      if (!response.ok) throw new Error('Failed to load script');
-      const text = await response.text();
-      parseScript(text);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  loadScript();
+      try {
+        const response = await fetch('/script.txt');
+        if (!response.ok) throw new Error('Failed to load script');
+        const text = await response.text();
+        parseScript(text);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     loadScript();
+    
     const synth = window.speechSynthesis;
     synthRef.current = synth;
     synth.onvoiceschanged = initSpeech;
@@ -277,6 +282,11 @@ function App() {
             } else {
               console.log("[saveResponse] Interview completed - all questions answered");
               setCurrentIndex(script.length); // Set beyond script length to show restart button
+              
+              // Automatically start feedback analysis
+              setTimeout(() => {
+                analyzeInterview();
+              }, 1000); // Small delay to ensure UI updates
             }
           }, 500); // Small delay to show completion feedback
           
@@ -302,7 +312,7 @@ function App() {
   };
 
   
-  const handleProceed = () => {
+  const startInterview = () => {
     console.log("Starting interview...");
     
     if (currentIndex === -1 && script.length > 0) {
@@ -312,6 +322,10 @@ function App() {
       console.log("Started interview with first question");
     }
   };
+
+  const handleProceed = () => {
+    startInterview();
+  };
   
 
   const handleRecommend = () => {
@@ -320,6 +334,127 @@ function App() {
 
   const handleVolumeChange = (e) => {
     setVolume(parseFloat(e.target.value));
+  };
+
+  const handleResumeUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf') {
+      setSaveError('Please upload a PDF file only.');
+      return;
+    }
+    
+    setIsUploadingResume(true);
+    setSaveError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
+      
+      const response = await fetch('http://localhost:5008/upload-resume', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Resume uploaded successfully:', result);
+      
+      setResumeFile(file);
+      setResumeUploaded(true);
+      
+      // Automatically generate questions after upload
+      await generateNewQuestions(result.resume_path);
+      
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      setSaveError(`Failed to upload resume: ${error.message}`);
+    } finally {
+      setIsUploadingResume(false);
+    }
+  };
+
+  const generateNewQuestions = async (resumePath = null) => {
+    setIsGeneratingQuestions(true);
+    setSaveError(null);
+    
+    try {
+      console.log('Generating new questions with OpenAI...');
+      
+      const response = await fetch('http://localhost:5008/generate-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ resume_path: resumePath }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Questions generated successfully:', result);
+      
+      // Reload the script to get new questions
+      await loadScript();
+      
+      // Reset interview state
+      setCurrentIndex(-1);
+      setShowAnswer(false);
+      setAnalysisResult(null);
+      
+    } catch (error) {
+      console.error('Error generating questions:', error);
+      setSaveError(`Failed to generate new questions: ${error.message}`);
+    } finally {
+      setIsGeneratingQuestions(false);
+    }
+  };
+  
+  const analyzeInterview = async () => {
+    setIsAnalyzing(true);
+    setSaveError(null);
+    
+    try {
+      console.log('Analyzing interview performance with OpenAI...');
+      
+      const response = await fetch('http://localhost:5008/analyze-interview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resume_path: resumeFile ? `/Applications/interbuu/uploads/${resumeFile.name}` : null
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Analysis completed:', result);
+      
+      setAnalysisResult({
+        feedback: result.full_feedback || result.feedback_preview,
+        feedbackPath: result.feedback_path,
+        linksAnalyzed: result.links_analyzed,
+        rating: result.rating || 'N/A',
+        strengths: result.strengths || [],
+        improvements: result.improvements || []
+      });
+      
+    } catch (error) {
+      console.error('Error analyzing interview:', error);
+      setSaveError(`Failed to analyze interview: ${error.message}`);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
 
@@ -394,25 +529,140 @@ function App() {
           <p>🎉 Interview completed successfully!</p>
           <p>All {script.length} questions have been answered and saved.</p>
           <p>Check your responses in the answers.txt file.</p>
+          
+          <div className="analysis-section">
+            <button 
+              className="analyze-btn"
+              onClick={analyzeInterview}
+              disabled={isAnalyzing}
+            >
+              {isAnalyzing ? '🔍 Analyzing...' : '🔍 Get AI Feedback & Analysis'}
+            </button>
+            
+            {analysisResult && (
+              <div className="analysis-result">
+                <h3>📊 Interview Analysis Complete!</h3>
+                
+                {analysisResult.rating && (
+                  <div className="rating-section">
+                    <h4>🎆 Overall Rating: {analysisResult.rating}</h4>
+                  </div>
+                )}
+                
+                {analysisResult.strengths && analysisResult.strengths.length > 0 && (
+                  <div className="strengths-section">
+                    <h4>✅ Strengths:</h4>
+                    <ul>
+                      {analysisResult.strengths.map((strength, index) => (
+                        <li key={index}>{strength}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {analysisResult.improvements && analysisResult.improvements.length > 0 && (
+                  <div className="improvements-section">
+                    <h4>📝 Areas for Improvement:</h4>
+                    <ul>
+                      {analysisResult.improvements.map((improvement, index) => (
+                        <li key={index}>{improvement}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                <div className="feedback-details">
+                  <p><strong>🔗 Links Analyzed:</strong> {analysisResult.linksAnalyzed}</p>
+                  <p><strong>📁 Feedback File:</strong> {analysisResult.feedbackPath}</p>
+                </div>
+                
+                <div className="feedback-content">
+                  <h4>📝 Detailed Feedback:</h4>
+                  <div className="feedback-text">
+                    {analysisResult.feedback.split('\n').map((line, index) => (
+                      <p key={index}>{line}</p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
-        <div className="welcome-message">
-          {script.length > 0 ? (
-            <>
-              <p>Welcome to your interview practice session!</p>
-              <p>Loaded {script.length} questions.</p>
-              {!voice && (
-                <p className="voice-warning">
-                  Note: Text-to-speech may not be available in your browser
-                </p>
-              )}
-            </>
+        <div className="welcome-screen">
+          <h1>🎯 AI Interview Practice Coach</h1>
+          <p>Practice your interview skills with AI-powered personalized questions!</p>
+          
+          {!resumeUploaded ? (
+            <div className="upload-section">
+              <h2>📄 Upload Your Resume</h2>
+              <p>Upload your resume PDF to generate personalized interview questions</p>
+              
+              <div className="upload-container">
+                <input
+                  type="file"
+                  id="resume-upload"
+                  accept=".pdf"
+                  onChange={handleResumeUpload}
+                  disabled={isUploadingResume}
+                  style={{ display: 'none' }}
+                />
+                <label 
+                  htmlFor="resume-upload" 
+                  className={`upload-btn ${isUploadingResume ? 'uploading' : ''}`}
+                >
+                  {isUploadingResume ? (
+                    <>
+                      <div className="loading-spinner"></div>
+                      Uploading & Generating Questions...
+                    </>
+                  ) : (
+                    <>
+                      📤 Choose Resume PDF
+                    </>
+                  )}
+                </label>
+              </div>
+              
+              <div className="or-divider">
+                <span>OR</span>
+              </div>
+              
+              <button className="start-btn" onClick={startInterview}>
+                🎤 Start with Default Questions
+              </button>
+            </div>
           ) : (
-            <p>No questions found in the script.</p>
+            <div className="welcome-buttons">
+              <div className="resume-uploaded">
+                ✅ Resume uploaded: {resumeFile?.name}
+              </div>
+              
+              <button 
+                className="generate-questions-btn"
+                onClick={() => generateNewQuestions()}
+                disabled={isGeneratingQuestions}
+              >
+                {isGeneratingQuestions ? (
+                  <>
+                    <div className="loading-spinner"></div>
+                    Generating Questions...
+                  </>
+                ) : (
+                  <>
+                    🔄 Regenerate Questions
+                  </>
+                )}
+              </button>
+              
+              <button className="start-btn" onClick={startInterview}>
+                🎤 Start Interview
+              </button>
+            </div>
           )}
         </div>
       )}
-
+      
       <div className="voice-controls">
         <label htmlFor="volume">Voice Volume:</label>
         <input

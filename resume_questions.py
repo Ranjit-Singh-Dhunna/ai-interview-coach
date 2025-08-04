@@ -13,6 +13,7 @@ import base64
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from datetime import datetime
 import json
 
@@ -33,8 +34,22 @@ CORS(app, resources={
     }
 })
 
-import whisper
+# Configure upload settings
+UPLOAD_FOLDER = '/Applications/interbuu/uploads'
+ALLOWED_EXTENSIONS = {'pdf'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
+# Create upload directory if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+import whisper
+from openai_interview_system import OpenAIInterviewSystem, generate_new_questions, analyze_interview_and_links
+
+# Load Whisper model
 MODEL = whisper.load_model("medium")
 
 # Define the output schema
@@ -327,6 +342,114 @@ Transcript: {transcribed_text}
         return jsonify({
             "status": "error",
             "message": f"Internal server error: {str(e)}"
+        }), 500
+
+
+@app.route('/generate-questions', methods=['POST'])
+def generate_questions_endpoint():
+    """Phase 1: Generate new interview questions using OpenAI"""
+    print("\n=== Received request to /generate-questions ===")
+    
+    try:
+        data = request.get_json()
+        resume_path = data.get('resume_path', '/Applications/interbuu/Dhunna_R_40294791_CV_pdf.pdf')
+        
+        print(f"Generating questions for resume: {resume_path}")
+        
+        # Generate questions using OpenAI
+        questions, resume_data = generate_new_questions(resume_path)
+        
+        # Save the generated script
+        script_path = "/Applications/interbuu/web/interview-practice/public/script.txt"
+        save_to_file(questions, script_path)
+        
+        # Extract and save just interviewer questions
+        interviewer_lines = extract_interviewer_lines(questions)
+        questions_path = "/Applications/interbuu/web/interview-practice/public/questions.txt"
+        save_to_file(interviewer_lines, questions_path)
+        
+        print("Successfully generated and saved new questions")
+        
+        return jsonify({
+            "status": "success",
+            "message": "New interview questions generated successfully",
+            "questions_count": len(interviewer_lines.split('\n')),
+            "resume_links": resume_data.get('links', [])
+        })
+        
+    except Exception as e:
+        print(f"Error generating questions: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to generate questions: {str(e)}"
+        }), 500
+
+
+@app.route('/upload-resume', methods=['POST'])
+def upload_resume():
+    try:
+        if 'resume' not in request.files:
+            return jsonify({"error": "No resume file provided"}), 400
+        
+        file = request.files['resume']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"{timestamp}_{filename}"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            
+            file.save(filepath)
+            
+            return jsonify({
+                "success": True,
+                "message": "Resume uploaded successfully!",
+                "resume_path": filepath,
+                "filename": filename
+            })
+        else:
+            return jsonify({"error": "Invalid file type. Please upload a PDF file."}), 400
+            
+    except Exception as e:
+        print(f"[upload_resume] Error: {str(e)}")
+        return jsonify({"error": f"Upload failed: {str(e)}"}), 500
+
+@app.route('/analyze-interview', methods=['POST'])
+def analyze_interview_endpoint():
+    """Phase 3: Analyze interview performance and provide feedback"""
+    print("\n=== Received request to /analyze-interview ===")
+    
+    try:
+        data = request.get_json()
+        answers_path = data.get('answers_path', '/Applications/interbuu/responses/answers.txt')
+        resume_path = data.get('resume_path', '/Applications/interbuu/Dhunna_R_40294791_CV_pdf.pdf')
+        
+        print(f"Analyzing interview from: {answers_path}")
+        
+        # First extract resume data
+        system = OpenAIInterviewSystem()
+        resume_data = system.extract_resume_data_and_links(resume_path)
+        
+        # Analyze the interview performance
+        feedback, feedback_path = analyze_interview_and_links(answers_path, resume_data)
+        
+        print(f"Analysis complete. Feedback saved to: {feedback_path}")
+        
+        return jsonify({
+            "status": "success",
+            "message": "Interview analysis completed",
+            "feedback_path": feedback_path,
+            "feedback_preview": feedback[:500] + "..." if len(feedback) > 500 else feedback,
+            "links_analyzed": len(resume_data.get('links', []))
+        })
+        
+    except Exception as e:
+        print(f"Error analyzing interview: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to analyze interview: {str(e)}"
         }), 500
 
 

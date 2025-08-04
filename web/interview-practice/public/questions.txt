@@ -1,6 +1,8 @@
-Interviewer: Could you please share more about your experience as a Software Engineer Intern at Company Name?
-Interviewer: Can you walk us through your project 'Click2Bill'? What was its impact, and how did it reduce manual data entry by 70%?
-Interviewer: How did you approach problem-solving in your project 'Code Buddy'? What was its impact on performance and future scalability?
-Interviewer: How do you collaborate with team members effectively during a project? Can you share an example of this from your experience?
-Interviewer: What are your career goals moving forward, and how does this position align with your aspirations?
-Interviewer: Do you have any questions for us about the company or this position that I haven't addressed during our conversation?
+Interviewer: "Hi Ranjit, it's great to meet you! I see you have a strong background in software engineering. Could you start by telling me about your experience with the programming languages listed on your resume, particularly Java and Python? How have you applied them in your projects?"
+Interviewer: "Your Click2Bill project sounds impressive, especially the automation aspect. Can you elaborate on the backend logic you developed using Google Apps Script and how it improved the workflow for users?"
+Interviewer: "I noticed you mentioned developing an AI-powered code review tool called Code Buddy. Can you walk me through the architecture of this project and how you integrated the AI service for code feedback?"
+Interviewer: "In your DRIP GENIUS project, you utilized K-means clustering for color analysis. Can you explain your approach to implementing this feature and how you ensured the recommendations were relevant to the users' style?"
+Interviewer: "You participated in two hackathons, achieving notable rankings. Can you share a specific challenge you faced during these events and how you collaborated with your team to overcome it?"
+Interviewer: "Given your certifications in technical communication and human-centered AI, how do you see these skills enhancing your contributions to a software engineering team?"
+Interviewer: "I see you have a GitHub profile with your projects. Can you highlight one or two projects that you are most proud of and why? What feedback have you received from peers or users?"
+Interviewer: "Lastly, what are your career goals after completing your Bachelor of Engineering in Software Engineering? Where do you see yourself in the next few years?"
