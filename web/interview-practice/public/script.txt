@@ -1,0 +1,25 @@
+ Hello Ranjit Singh Dhunna, it's a pleasure to meet you. Let's get started with the interview. Could you please briefly tell me about yourself and your professional background as outlined in your resume?
+
+Answer me: I am Ranjit Singh Dhunna, a software engineer with experience in various programming languages such as Java, JavaScript, Python, C++, HTML, CSS, among others. I have worked on multiple projects that showcase my skills and expertise in different areas. My professional background also includes experience with operating systems like Windows 365, Linux, Mobile, and MacOS, as well as platforms such as Git, Eclipse, VS Code, Cursor, PyCharm, BlueJ, MongoDB, React.js, Node.js, Express.js, and more.
+
+Interviewer: Could you elaborate on your proficiency in programming languages? Which ones do you consider your strongest suits?
+Answer me: I am particularly skilled in Java, Python, JavaScript, and C++. I have worked extensively with these languages in my projects and can confidently say that I have a strong understanding of their syntax, libraries, and best practices.
+
+Interviewer: Could you tell us more about the projects listed in your resume? What was your role in each project, and what specific technologies did you use?
+Answer me: Sure! The first project I'd like to discuss is Click2Bill, a finance/invoicing system. My role involved end-to-end workflow automation, reducing manual data entry by 70%. The technology stack used in this project includes Google Sheets, Google Apps Script, HTML/CSS/JavaScript.
+
+The second project is Code Buddy, an educational tool built with React, Vite, PrismJS, react-markdown, Node.js, Express.js. This project aimed for fast performance and future scalability.
+
+Lastly, DRIP GENIUS is a fashion recommendation system that uses Python (Flask), HTML/CSS/JavaScript, Roboflow, Gemini AI to provide curated outfits based on user style and color preferences.
+
+Interviewer: Can you describe a challenging problem you faced in one of your projects, how you approached the solution, and what was the outcome?
+Answer me: In the DRIP GENIUS project, we encountered an issue where the AI model struggled to accurately recommend outfits based on user style preferences. To address this, I researched various machine learning techniques and implemented a new approach using a combination of Roboflow and Gemini AI. After several iterations and testing, the accuracy of the recommendations significantly improved, resulting in increased user satisfaction.
+
+Interviewer: How do you collaborate effectively with team members on projects? Could you give an example of a time when your communication skills proved essential?
+Answer me: Collaboration is crucial in any project, and I believe open communication and active listening are key to achieving success. In one instance during the development of Click2Bill, there was a miscommunication regarding a critical integration with Google Sheets. By maintaining open lines of communication, clarifying expectations, and working closely with my team members, we were able to quickly identify and resolve the issue, ensuring the project stayed on schedule.
+
+Interviewer: What are your career goals, and how do you see yourself growing in this position?
+Answer me: My long-term goal is to become a leading software engineer, driving innovative solutions and making a significant impact within the tech industry. I believe this position at OperaKng Systems offers me the opportunity to grow professionally, expand my skillset, and work on challenging projects that will help me achieve my career aspirations.
+
+Interviewer: To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?
+Answer me: Yes, could you please provide more details about the team structure and culture at OperaKng Systems, as well as the opportunities for professional development and growth within the company? Additionally, I would like to know about any upcoming projects or initiatives that I might be involved in if I were to join your team.

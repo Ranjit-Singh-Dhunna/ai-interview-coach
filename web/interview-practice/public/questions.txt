@@ -1,0 +1,6 @@
+Interviewer: Could you elaborate on your proficiency in programming languages? Which ones do you consider your strongest suits?
+Interviewer: Could you tell us more about the projects listed in your resume? What was your role in each project, and what specific technologies did you use?
+Interviewer: Can you describe a challenging problem you faced in one of your projects, how you approached the solution, and what was the outcome?
+Interviewer: How do you collaborate effectively with team members on projects? Could you give an example of a time when your communication skills proved essential?
+Interviewer: What are your career goals, and how do you see yourself growing in this position?
+Interviewer: To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?
