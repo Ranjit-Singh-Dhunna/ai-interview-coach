@@ -7,6 +7,35 @@ from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 import pdfplumber
+from flask import Flask, request, jsonify
+import os
+import base64
+from datetime import datetime
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from datetime import datetime
+import json
+
+# Add this at the top of your save_answer function
+session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+answers_path = os.path.join("responses", f"answers_{session_id}.txt")
+
+app = Flask(__name__)
+
+# Configure CORS to allow all routes from your React app
+CORS(app, resources={
+    r"/*": {
+        "origins": "http://localhost:3000",
+        "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": True,
+        "max_age": 86400
+    }
+})
+
+import whisper
+
+MODEL = whisper.load_model("medium")
 
 # Define the output schema
 class PersonalInfo(BaseModel):
@@ -174,7 +203,53 @@ def save_to_file(content, file_path):
     except Exception as e:
         print(f"Error saving file: {e}")
 
-if __name__ == "__main__":
+@app.route('/save-answer', methods=['POST'])
+def save_answer():
+    try:
+        data = request.get_json()
+        question = data.get('question', 'Unknown Question')
+        answer = data.get('answer', '')
+        audio_base64 = data.get('audio', '')
+        timestamp = data.get('timestamp', datetime.now().isoformat())
+
+        # Save audio to file
+        audio_data = base64.b64decode(audio_base64)
+        filename = f"response_{timestamp.replace(':', '-').replace('.', '-')}.webm"
+        save_path = os.path.join("responses", filename)
+
+        os.makedirs("responses", exist_ok=True)
+        with open(save_path, 'wb') as f:
+            f.write(audio_data)
+
+        # Save answer to answers.txt (append mode)
+        answers_path = os.path.join("responses", "answers.txt")
+        with open(answers_path, 'a', encoding='utf-8') as f:  # Note 'a' for append
+            f.write(f"""
+---
+Timestamp: {timestamp}
+Question: {question}
+Transcript: {answer}
+
+""")
+
+        print(f"Saved audio for question: {question}")
+        print(f"Transcript: {answer}")
+
+        return jsonify({
+            "status": "success", 
+            "message": "Audio and transcript saved.",
+            "question": question,
+            "timestamp": timestamp
+        })
+    
+    except Exception as e:
+        print("Error saving answer:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5008, debug=True)
     try:
         # Step 1: Parse resume (silently)
         resume = process_resume("Dhunna_R_40294791_CV_pdf.pdf")
@@ -183,12 +258,12 @@ if __name__ == "__main__":
         interview = generate_interview(resume)
         
         # Step 3: Save full script
-        script_path = "/Applications/interbuu/resume/web/interview-practice/public/script.txt"
+        script_path = "/Applications/interbuu/web/interview-practice/public/script.txt"
         save_to_file(interview, script_path)
         
         # Step 4: Extract and save just interviewer questions
         interviewer_lines = extract_interviewer_lines(interview)
-        questions_path = "/Applications/interbuu/resume/web/interview-practice/public/questions.txt"
+        questions_path = "/Applications/interbuu/web/interview-practice/public/questions.txt"
         save_to_file(interviewer_lines, questions_path)
         
     except Exception as e:

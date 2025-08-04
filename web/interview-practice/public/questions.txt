@@ -1,6 +1,6 @@
-Interviewer: Could you elaborate on your proficiency in programming languages? Which ones do you consider your strongest suits?
-Interviewer: Could you tell us more about the projects listed in your resume? What was your role in each project, and what specific technologies did you use?
-Interviewer: Can you describe a challenging problem you faced in one of your projects, how you approached the solution, and what was the outcome?
-Interviewer: How do you collaborate effectively with team members on projects? Could you give an example of a time when your communication skills proved essential?
-Interviewer: What are your career goals, and how do you see yourself growing in this position?
-Interviewer: To wrap up, do you have any questions for us about the company or this position that I haven't addressed during our conversation?
+Interviewer: Could you please share more about your experience as a Software Engineer Intern at Company Name?
+Interviewer: Can you walk us through your project 'Click2Bill'? What was its impact, and how did it reduce manual data entry by 70%?
+Interviewer: How did you approach problem-solving in your project 'Code Buddy'? What was its impact on performance and future scalability?
+Interviewer: How do you collaborate with team members effectively during a project? Can you share an example of this from your experience?
+Interviewer: What are your career goals moving forward, and how does this position align with your aspirations?
+Interviewer: Do you have any questions for us about the company or this position that I haven't addressed during our conversation?

@@ -1,0 +1,36 @@
+
+---
+Timestamp: 2025-08-04T03:34:38.564Z
+Question: Could you please share more about your experience as a Software Engineer Intern at Company Name?
+Transcript: 
+
+
+---
+Timestamp: 2025-08-04T03:34:51.632Z
+Question: Can you walk us through your project 'Click2Bill'? What was its impact, and how did it reduce manual data entry by 70%?
+Transcript: 
+
+
+---
+Timestamp: 2025-08-04T03:35:03.753Z
+Question: How did you approach problem-solving in your project 'Code Buddy'? What was its impact on performance and future scalability?
+Transcript: 
+
+
+---
+Timestamp: 2025-08-04T03:35:14.380Z
+Question: How do you collaborate with team members effectively during a project? Can you share an example of this from your experience?
+Transcript: 
+
+
+---
+Timestamp: 2025-08-04T03:35:25.637Z
+Question: What are your career goals moving forward, and how does this position align with your aspirations?
+Transcript: 
+
+
+---
+Timestamp: 2025-08-04T03:35:43.267Z
+Question: Do you have any questions for us about the company or this position that I haven't addressed during our conversation?
+Transcript: 
+
