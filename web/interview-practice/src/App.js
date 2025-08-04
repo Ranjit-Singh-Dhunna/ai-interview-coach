@@ -219,86 +219,110 @@ function App() {
   };
 
   const saveResponse = async (audioBlob) => {
+    console.log("[saveResponse] Starting to save response...");
+    
     return new Promise((resolve, reject) => {
+      console.log("[saveResponse] Creating FileReader...");
       const audioReader = new FileReader();
       
       audioReader.onloadend = async () => {
         try {
           const currentQuestion = script[currentIndex].question;
-          console.log("Saving response for question:", currentQuestion); // Debug log
+          console.log("[saveResponse] Processing question:", currentQuestion);
           
           const audioBase64 = audioReader.result.split(',')[1];
+          console.log("[saveResponse] Audio data length:", audioBase64.length, "base64 chars");
+          console.log("[saveResponse] User transcript:", userTranscript);
+          
+          console.log("[saveResponse] Preparing request payload...");
+          const payload = {
+            question: currentQuestion,
+            answer: userTranscript,
+            audio: audioBase64,
+            timestamp: new Date().toISOString()
+          };
+          
+          console.log("[saveResponse] Sending to backend...");
           const response = await fetch('http://localhost:5008/save-answer', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              question: currentQuestion, // Ensure this changes
-              answer: userTranscript,
-              audio: audioBase64,
-              timestamp: new Date().toISOString()
-            }),
+            body: JSON.stringify(payload),
           });
   
           if (!response.ok) {
-            throw new Error(`Server error: ${response.status}`);
+            const errorText = await response.text();
+            console.error("[saveResponse] Server error:", response.status, errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
           }
           
           const result = await response.json();
-          console.log("Save successful:", result); // Debug log
+          console.log("[saveResponse] Save successful:", result);
+          
           setUserTranscript('');
+          console.log("[saveResponse] Cleared user transcript");
+          
+          // Automatically advance to next question after successful save
+          setTimeout(() => {
+            if (currentIndex < script.length - 1) {
+              const nextIndex = currentIndex + 1;
+              setCurrentIndex(nextIndex);
+              setShowAnswer(false);
+              console.log("[saveResponse] Auto-advanced to next question:", nextIndex);
+              // Auto-speak the next question
+              setTimeout(() => {
+                speakQuestion(script[nextIndex].question);
+              }, 200);
+            } else {
+              console.log("[saveResponse] Interview completed - all questions answered");
+              setCurrentIndex(script.length); // Set beyond script length to show restart button
+            }
+          }, 500); // Small delay to show completion feedback
+          
           resolve(result);
         } catch (error) {
-          console.error('Error saving response:', error);
+          console.error("[saveResponse] Error saving response:", error);
           setSaveError(`Failed to save response: ${error.message}`);
           reject(error);
         } finally {
           setIsSaving(false);
+          console.log("[saveResponse] Finished save operation");
         }
       };
       
+      audioReader.onerror = (error) => {
+        console.error("[saveResponse] FileReader error:", error);
+        reject(new Error("Failed to read audio data"));
+      };
+      
+      console.log("[saveResponse] Reading audio blob...");
       audioReader.readAsDataURL(audioBlob);
     });
   };
+
   
   const handleProceed = () => {
-    if (isRecording || isSaving) return;
-  
-    console.log("Handling proceed...");
-    console.log("currentIndex:", currentIndex);
-    console.log("script length:", script.length);
-  
-    stopRecording();
-    stopSpeaking();
-  
-    if (currentIndex < script.length - 1) {
-      const newIndex = currentIndex + 1;
-      console.log("Advancing to question:", newIndex);
-      setCurrentIndex(newIndex);
+    console.log("Starting interview...");
+    
+    if (currentIndex === -1 && script.length > 0) {
+      setCurrentIndex(0);
       setShowAnswer(false);
-      speakQuestion(script[newIndex].question);
-    } else {
-      console.log("Reached end of interview");
-      setCurrentIndex(-1);
-      setShowAnswer(false);
+      speakQuestion(script[0].question);
+      console.log("Started interview with first question");
     }
   };
   
 
   const handleRecommend = () => {
-    setShowAnswer(true);
+    setShowAnswer(!showAnswer);
   };
 
   const handleVolumeChange = (e) => {
     setVolume(parseFloat(e.target.value));
   };
 
-  const getButtonText = () => {
-    if (currentIndex === -1) return 'Start Interview';
-    if (currentIndex === script.length - 1) return 'Restart Interview';
-    return 'Next Question';
-  };
+
 
   if (loading) {
     return <div className="status loading">Loading interview script...</div>;
@@ -319,7 +343,7 @@ function App() {
         </div>
       )}
       
-      {currentIndex >= 0 ? (
+      {currentIndex >= 0 && currentIndex < script.length ? (
         <>
           <div className="interviewer">
             <strong>Interviewer:</strong> {script[currentIndex].question}
@@ -365,6 +389,12 @@ function App() {
             </div>
           )}
         </>
+      ) : currentIndex >= script.length ? (
+        <div className="completion-message">
+          <p>🎉 Interview completed successfully!</p>
+          <p>All {script.length} questions have been answered and saved.</p>
+          <p>Check your responses in the answers.txt file.</p>
+        </div>
       ) : (
         <div className="welcome-message">
           {script.length > 0 ? (
@@ -398,34 +428,55 @@ function App() {
       </div>
 
       <div className="buttons">
-        <button 
-          id="proceed" 
-          onClick={handleProceed}
-          disabled={script.length === 0 || isRecording || isSaving}
-        >
-          {getButtonText()}
-        </button>
-        <button 
-          id="recommend" 
-          onClick={handleRecommend}
-          disabled={currentIndex === -1 || showAnswer || isRecording || isSaving}
-        >
-          Show Suggested Answer
-        </button>
+        {currentIndex === -1 && (
+          <button 
+            id="start" 
+            onClick={handleProceed}
+            disabled={script.length === 0}
+          >
+            Start Interview
+          </button>
+        )}
+        {currentIndex >= script.length && !isRecording && !isSaving && (
+          <button 
+            id="restart" 
+            onClick={() => {
+              setCurrentIndex(-1);
+              setShowAnswer(false);
+              stopSpeaking();
+            }}
+          >
+            Restart Interview
+          </button>
+        )}
+        {currentIndex >= 0 && currentIndex < script.length && (
+          <button 
+            id="recommend" 
+            onClick={handleRecommend}
+            disabled={isRecording || isSaving}
+          >
+            {showAnswer ? 'Hide Suggested Answer' : 'Show Suggested Answer'}
+          </button>
+        )}
       </div>
 
       {script.length > 0 && (
         <div className="progress">
           <div>
-            Question {currentIndex + 1} of {script.length}
+            {currentIndex >= script.length 
+              ? `Interview Completed - ${script.length} questions answered`
+              : `Question ${currentIndex + 1} of ${script.length}`
+            }
           </div>
           <div className="progress-bar">
             <div 
               className="progress-fill"
               style={{ 
-                width: `${currentIndex >= 0 
-                  ? ((currentIndex + 1) / script.length) * 100 
-                  : 0}%` 
+                width: `${currentIndex >= script.length 
+                  ? 100
+                  : currentIndex >= 0 
+                    ? ((currentIndex + 1) / script.length) * 100 
+                    : 0}%` 
               }}
             ></div>
           </div>

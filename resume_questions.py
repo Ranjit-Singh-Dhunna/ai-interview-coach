@@ -205,47 +205,129 @@ def save_to_file(content, file_path):
 
 @app.route('/save-answer', methods=['POST'])
 def save_answer():
+    print("\n=== Received request to /save-answer ===")
+    
     try:
+        # Log headers for debugging
+        print("Request headers:", request.headers)
+        
+        # Get JSON data
         data = request.get_json()
+        
+        if not data:
+            print("Error: No data received in request")
+            return jsonify({"status": "error", "message": "No data received"}), 400
+        
+        # Extract fields with fallbacks
         question = data.get('question', 'Unknown Question')
         answer = data.get('answer', '')
         audio_base64 = data.get('audio', '')
         timestamp = data.get('timestamp', datetime.now().isoformat())
+        
+        print(f"\nProcessing question: {question}")
+        print(f"Transcript length: {len(answer)} characters")
+        print(f"Audio data length: {len(audio_base64)} base64 characters")
+        print(f"Timestamp: {timestamp}")
 
-        # Save audio to file
-        audio_data = base64.b64decode(audio_base64)
-        filename = f"response_{timestamp.replace(':', '-').replace('.', '-')}.webm"
-        save_path = os.path.join("responses", filename)
+        # Verify audio data
+        if not audio_base64:
+            print("Warning: No audio data received")
+        
+        # Save audio to file and transcribe with Whisper
+        transcribed_text = "[No transcript available]"
+        try:
+            audio_data = base64.b64decode(audio_base64)
+            filename = f"response_{timestamp.replace(':', '-').replace('.', '-')}.webm"
+            save_path = os.path.join("responses", filename)
+            
+            print(f"\nSaving audio to: {save_path}")
+            os.makedirs("responses", exist_ok=True)
+            
+            with open(save_path, 'wb') as f:
+                f.write(audio_data)
+            print(f"Successfully saved audio file ({len(audio_data)} bytes)")
+            
+            # Transcribe audio using Whisper
+            if len(audio_data) > 1000:  # Only transcribe if audio has substantial content
+                print("\nTranscribing audio with Whisper...")
+                try:
+                    result = MODEL.transcribe(save_path)
+                    transcribed_text = result["text"].strip()
+                    print(f"Whisper transcription successful: '{transcribed_text}'")
+                    
+                    if not transcribed_text or len(transcribed_text.strip()) < 3:
+                        transcribed_text = "[Audio too short or unclear for transcription]"
+                        print("Warning: Transcription was too short or empty")
+                        
+                except Exception as whisper_error:
+                    print(f"Whisper transcription failed: {str(whisper_error)}")
+                    transcribed_text = f"[Transcription failed: {str(whisper_error)}]"
+            else:
+                print("Audio file too small for transcription")
+                transcribed_text = "[Audio file too small]"
+                
+        except Exception as audio_error:
+            print(f"Error saving audio: {str(audio_error)}")
+            return jsonify({
+                "status": "error",
+                "message": f"Audio save failed: {str(audio_error)}"
+            }), 500
 
-        os.makedirs("responses", exist_ok=True)
-        with open(save_path, 'wb') as f:
-            f.write(audio_data)
-
-        # Save answer to answers.txt (append mode)
+        # Save answer to answers.txt
         answers_path = os.path.join("responses", "answers.txt")
-        with open(answers_path, 'a', encoding='utf-8') as f:  # Note 'a' for append
-            f.write(f"""
----
+        print(f"\nSaving transcript to: {answers_path}")
+        
+        try:
+            os.makedirs(os.path.dirname(answers_path), exist_ok=True)
+            
+            # Check if file exists to determine if we need headers
+            file_exists = os.path.exists(answers_path)
+            
+            with open(answers_path, 'a', encoding='utf-8') as f:
+                if not file_exists:
+                    print("Creating new answers.txt file")
+                    f.write("# Interview Answers Log\n\n")
+                
+                entry = f"""---
 Timestamp: {timestamp}
 Question: {question}
-Transcript: {answer}
+Transcript: {transcribed_text}
 
-""")
+"""
+                f.write(entry)
+                print(f"Successfully wrote transcript entry ({len(entry)} characters)")
+                
+                # Verify write by reading last line
+                if os.path.exists(answers_path):
+                    with open(answers_path, 'r', encoding='utf-8') as verify_file:
+                        lines = verify_file.readlines()
+                        print(f"File verification - last 3 lines: {lines[-3:]}")
+                else:
+                    print("Warning: Could not verify file after writing")
+                    
+        except Exception as transcript_error:
+            print(f"Error saving transcript: {str(transcript_error)}")
+            return jsonify({
+                "status": "error",
+                "message": f"Transcript save failed: {str(transcript_error)}"
+            }), 500
 
-        print(f"Saved audio for question: {question}")
-        print(f"Transcript: {answer}")
-
+        print("\n=== Successfully processed request ===")
         return jsonify({
             "status": "success", 
             "message": "Audio and transcript saved.",
             "question": question,
-            "timestamp": timestamp
+            "timestamp": timestamp,
+            "transcript_length": len(transcribed_text),
+            "transcript": transcribed_text
         })
     
     except Exception as e:
-        print("Error saving answer:", e)
-        return jsonify({"status": "error", "message": str(e)}), 500
-
+        print(f"\n!!! Critical error in save_answer: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": f"Internal server error: {str(e)}"
+        }), 500
 
 
 if __name__ == '__main__':
