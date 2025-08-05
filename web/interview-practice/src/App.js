@@ -23,6 +23,8 @@ function App() {
   const [resumeUploaded, setResumeUploaded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [sampleAnswer, setSampleAnswer] = useState('');
+  const [isLoadingSampleAnswer, setIsLoadingSampleAnswer] = useState(false);
   
   const synthRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -330,8 +332,60 @@ function App() {
   };
   
 
-  const handleRecommend = () => {
+  const handleRecommend = async () => {
+    if (!showAnswer) {
+      // Fetch OpenAI-generated sample answer when showing
+      setIsLoadingSampleAnswer(true);
+      try {
+        const currentQuestion = script[currentIndex].question;
+        const response = await fetch('http://localhost:5008/generate-sample-answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            question: currentQuestion,
+            resume_path: resumeFile ? `/Applications/interbuu/uploads/${resumeFile.name}` : null
+          }),
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          setSampleAnswer(result.sample_answer);
+        } else {
+          // Fallback to static answer if API fails
+          setSampleAnswer(script[currentIndex].answer);
+        }
+      } catch (error) {
+        console.error('Error fetching sample answer:', error);
+        // Fallback to static answer if API fails
+        setSampleAnswer(script[currentIndex].answer);
+      } finally {
+        setIsLoadingSampleAnswer(false);
+      }
+    }
     setShowAnswer(!showAnswer);
+  };
+
+  const cleanupUserData = async () => {
+    try {
+      console.log('Cleaning up user data for privacy...');
+      const response = await fetch('http://localhost:5008/cleanup-user-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('User data cleanup completed:', result.message);
+      } else {
+        console.warn('Failed to cleanup user data');
+      }
+    } catch (error) {
+      console.error('Error during cleanup:', error);
+    }
   };
 
   const handleVolumeChange = (e) => {
@@ -451,6 +505,11 @@ function App() {
         improvements: result.improvements || []
       });
       
+      // Automatically cleanup user data after providing feedback for privacy
+      setTimeout(() => {
+        cleanupUserData();
+      }, 2000); // Small delay to ensure feedback is displayed first
+      
     } catch (error) {
       console.error('Error analyzing interview:', error);
       setSaveError(`Failed to analyze interview: ${error.message}`);
@@ -494,7 +553,16 @@ function App() {
           </div>
           {showAnswer && (
             <div className="answer">
-              <strong>Suggested Answer:</strong> {script[currentIndex].answer}
+              <strong>Sample Recommended Answer:</strong>
+              {isLoadingSampleAnswer ? (
+                <div className="loading-sample">
+                  <span>Generating personalized sample answer...</span>
+                </div>
+              ) : (
+                <div className="sample-answer-content">
+                  {sampleAnswer || script[currentIndex].answer}
+                </div>
+              )}
             </div>
           )}
 
@@ -772,7 +840,6 @@ function App() {
           <button 
             id="recommend" 
             onClick={handleRecommend}
-            disabled={isRecording || isSaving}
           >
             {showAnswer ? 'Hide Suggested Answer' : 'Show Suggested Answer'}
           </button>

@@ -453,6 +453,93 @@ def analyze_interview_endpoint():
             "message": f"Failed to analyze interview: {str(e)}"
         }), 500
 
+@app.route('/generate-sample-answer', methods=['POST'])
+def generate_sample_answer():
+    """Generate a sample recommended answer for a specific question using OpenAI"""
+    try:
+        data = request.get_json()
+        question = data.get('question', '')
+        resume_path = data.get('resume_path', None)
+        
+        if not question:
+            return jsonify({"error": "Question is required"}), 400
+            
+        # Extract resume data if available
+        resume_context = ""
+        if resume_path and os.path.exists(resume_path):
+            system = OpenAIInterviewSystem()
+            resume_data = system.extract_resume_data_and_links(resume_path)
+            resume_context = f"\n\nCandidate Background:\n{resume_data.get('content', '')[:1000]}..."
+        
+        # Generate sample answer using OpenAI
+        prompt = f"""You are an expert interview coach. Generate a concise, professional sample answer (2-3 sentences) for this interview question that demonstrates best practices.
+
+Question: {question}
+
+Provide a sample answer that:
+- Is specific and actionable
+- Shows relevant experience or skills
+- Uses the STAR method when appropriate (Situation, Task, Action, Result)
+- Is conversational and natural
+- Avoids generic responses{resume_context}
+
+Sample Answer:"""
+        
+        try:
+            # Use the existing OpenAI system
+            system = OpenAIInterviewSystem()
+            response = system.llm.invoke(prompt)
+            sample_answer = response.content.strip()
+            
+            return jsonify({
+                "success": True,
+                "sample_answer": sample_answer
+            })
+            
+        except Exception as llm_error:
+            print(f"OpenAI error: {str(llm_error)}")
+            # Fallback to a generic helpful response
+            fallback_answer = "Consider sharing a specific example from your experience that demonstrates relevant skills, the actions you took, and the positive results you achieved."
+            return jsonify({
+                "success": True,
+                "sample_answer": fallback_answer,
+                "fallback": True
+            })
+            
+    except Exception as e:
+        print(f"Error generating sample answer: {str(e)}")
+        return jsonify({"error": f"Failed to generate sample answer: {str(e)}"}), 500
+
+@app.route('/cleanup-user-data', methods=['POST'])
+def cleanup_user_data():
+    """Delete all user data from responses folder for privacy"""
+    try:
+        responses_dir = '/Applications/interbuu/responses'
+        
+        if os.path.exists(responses_dir):
+            # Get list of files before deletion for logging
+            files_deleted = []
+            for filename in os.listdir(responses_dir):
+                file_path = os.path.join(responses_dir, filename)
+                if os.path.isfile(file_path):
+                    files_deleted.append(filename)
+                    os.remove(file_path)
+            
+            return jsonify({
+                "success": True,
+                "message": f"Deleted {len(files_deleted)} files from responses folder",
+                "files_deleted": files_deleted
+            })
+        else:
+            return jsonify({
+                "success": True,
+                "message": "Responses folder does not exist"
+            })
+            
+    except Exception as e:
+        print(f"Error cleaning up user data: {str(e)}")
+        return jsonify({"error": f"Failed to cleanup user data: {str(e)}"}), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5008, debug=True)

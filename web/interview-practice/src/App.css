@@ -1172,3 +1172,42 @@ button.recording {
     min-width: 120px;
   }
 }
+
+/* Enhanced Sample Answer Styling */
+.loading-sample {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(90deg, #f8f9fa, #e9ecef, #f8f9fa);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.loading-sample span {
+  color: #6c757d;
+  font-style: italic;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.sample-answer-content {
+  margin-top: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+  border-radius: 6px;
+  line-height: 1.6;
+  font-size: 1.05em;
+}
+
+.answer strong {
+  color: #007bff;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.1em;
+}

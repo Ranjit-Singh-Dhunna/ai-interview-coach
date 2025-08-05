@@ -1,31 +1,31 @@
-Interviewer: "Hi Ranjit, it's great to meet you! I see you have a strong background in software engineering and a range of programming languages. Can you tell me about your experience with Java and how you've utilized it in your projects?"
+Interviewer: "Hi Ranjit, it's great to meet you! I hope you're doing well today. Let's dive into your background and projects. Can you tell me about your experience with the technologies you used in your Click2Bill project, particularly Google Apps Script and how it enabled workflow automation?"
 
-Answer me: (Provide a detailed explanation of your experience with Java, including specific projects or challenges you faced while using it.)
+Answer me: (Share your specific experiences with Google Apps Script, the challenges you faced during the project, and how you overcame them. Highlight any specific features you implemented that you’re particularly proud of.)
 
-Interviewer: "I noticed you developed an automated invoicing system called Click2Bill. Can you elaborate on the technical challenges you faced while integrating Google Apps Script with HTML/CSS/JavaScript for this project?"
+Interviewer: "In your Code Buddy project, you mentioned using React and Node.js/Express. Can you elaborate on how you handled the integration between the frontend and backend, especially concerning user submissions and AI API interactions?"
 
-Answer me: (Discuss any specific issues you encountered, solutions you implemented, and the impact of the project on reducing manual data entry.)
+Answer me: (Discuss your approach to API integration, any challenges you faced in ensuring smooth communication between the frontend and backend, and how you utilized tools like ESLint for code quality.)
 
-Interviewer: "In your Code Buddy project, you mentioned the use of React and Node.js. Can you describe how you approached the frontend and backend integration for this AI-powered code review tool?"
+Interviewer: "I see you have experience with various programming languages like Java, JavaScript, Python, and C++. Which language do you feel most comfortable with, and how do you decide which language to use for a particular project?"
 
-Answer me: (Explain the technologies you used for the frontend and backend, how they communicate, and any challenges you faced during integration.)
+Answer me: (Reflect on your comfort level with each language and give examples of projects or scenarios where you chose one language over another. Discuss any specific features or libraries in those languages that you find particularly useful.)
 
-Interviewer: "Your project DRIP GENIUS sounds fascinating, especially with its use of Roboflow and K-means clustering. Can you walk me through your thought process while designing the visual processing pipeline for this system?"
+Interviewer: "Your DRIP GENIUS project involved complex algorithms such as K-means clustering. Can you explain how you applied this algorithm for color analysis and any challenges you encountered during the implementation?"
 
-Answer me: (Detail the steps you took in designing the pipeline, the rationale behind using K-means clustering, and how the AI suggestions were generated.)
+Answer me: (Share your understanding of K-means clustering, how you implemented it in the project, and any specific difficulties you faced with data processing or optimization.)
 
-Interviewer: "With your participation in hackathons like @hack and ConUHacks IX, what was your approach to teamwork and collaboration under tight deadlines? Can you share an experience from one of these events?"
+Interviewer: "You've participated in hackathons like @hack 2025 and ConUHacks IX. Can you describe a particularly challenging problem you encountered during one of these events and how you and your team approached solving it?"
 
-Answer me: (Provide examples of how you collaborated with team members, any key roles you took on, and how you managed the pressure of a time-limited environment.)
+Answer me: (Discuss a specific challenge, the thought process your team went through, any brainstorming techniques you used, and the final outcome of your efforts.)
 
-Interviewer: "As someone with a GPA of 3.26 and involvement in relevant courses, what specific skills or knowledge do you hope to acquire during your co-op at Concordia University that will aid in your career goals?"
+Interviewer: "Collaboration is key in software development. Can you share an experience where you had to work closely with a team during a project? What role did you play, and how did you ensure effective communication?"
 
-Answer me: (Discuss what you aim to learn or achieve during your co-op and how it aligns with your long-term career aspirations.)
+Answer me: (Provide details on your role in the team, how you contributed to the project, and any tools or methods you used for communication and project management.)
 
-Interviewer: "I see you have a GitHub profile. Can you highlight a specific project on your GitHub that you are particularly proud of, and explain what makes it stand out?"
+Interviewer: "Looking ahead in your career, what are your aspirations in the tech field? Are there specific areas or technologies you are particularly excited to explore further?"
 
-Answer me: (Choose a project from your GitHub that showcases your skills well, and explain its functionality, technologies used, and any unique features.)
+Answer me: (Share your career goals and aspirations, mentioning any specific technology trends or areas of interest that excite you, and how you plan to develop your skills in those areas.)
 
-Interviewer: "Lastly, I noticed your interest in continuous improvement methodologies like Six Sigma and Agile. How do you apply these methodologies in your software development process?"
+Interviewer: "I noticed your GitHub profile has several projects. Could you walk me through one of your favorite projects on GitHub, highlighting what you learned from it and how you think it showcases your skills?"
 
-Answer me: (Talk about how you incorporate these methodologies into your projects, including any specific examples of how they have improved your workflow or project outcomes.)
+Answer me: (Choose a specific project from your GitHub, discuss the technical aspects of it, the challenges you faced, and how it reflects your skills and learning journey in software development.)
