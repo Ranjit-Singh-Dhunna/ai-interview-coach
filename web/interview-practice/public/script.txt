@@ -1,31 +1,31 @@
-Interviewer: "Hi Ranjit, it's great to meet you! I hope you're doing well today. Let's dive into your background and projects. Can you tell me about your experience with the technologies you used in your Click2Bill project, particularly Google Apps Script and how it enabled workflow automation?"
+Interviewer: "Hi Ranjit, it's great to meet you! To start, can you tell me about your experience with Java and how you've applied it in your projects or coursework?"
 
-Answer me: (Share your specific experiences with Google Apps Script, the challenges you faced during the project, and how you overcame them. Highlight any specific features you implemented that you’re particularly proud of.)
+Answer me: (This question allows Ranjit to showcase his proficiency in Java and contextualize it with real examples from his studies or projects, demonstrating his understanding of the language.)
 
-Interviewer: "In your Code Buddy project, you mentioned using React and Node.js/Express. Can you elaborate on how you handled the integration between the frontend and backend, especially concerning user submissions and AI API interactions?"
+Interviewer: "I noticed you developed an automated invoicing system called Click2Bill. Can you walk me through the backend logic you implemented and explain how it improved efficiency for users?"
 
-Answer me: (Discuss your approach to API integration, any challenges you faced in ensuring smooth communication between the frontend and backend, and how you utilized tools like ESLint for code quality.)
+Answer me: (This question encourages Ranjit to discuss his technical skills in Google Apps Script, backend development, and the practical impact of his project on reducing manual data entry.)
 
-Interviewer: "I see you have experience with various programming languages like Java, JavaScript, Python, and C++. Which language do you feel most comfortable with, and how do you decide which language to use for a particular project?"
+Interviewer: "In your project Code Buddy, you integrated an AI service for code review. What challenges did you face during the integration, and how did you address them?"
 
-Answer me: (Reflect on your comfort level with each language and give examples of projects or scenarios where you chose one language over another. Discuss any specific features or libraries in those languages that you find particularly useful.)
+Answer me: (This question allows Ranjit to discuss problem-solving and adaptability in the context of technical challenges, as well as his experience with AI service integration.)
 
-Interviewer: "Your DRIP GENIUS project involved complex algorithms such as K-means clustering. Can you explain how you applied this algorithm for color analysis and any challenges you encountered during the implementation?"
+Interviewer: "You mentioned participating in hackathons, including a cybersecurity one where you ranked 6th out of over 600 participants. Can you share a specific vulnerability you explored and how your team approached it?"
 
-Answer me: (Share your understanding of K-means clustering, how you implemented it in the project, and any specific difficulties you faced with data processing or optimization.)
+Answer me: (This question gives Ranjit an opportunity to demonstrate his knowledge of cybersecurity principles, teamwork, and practical application of skills in a competitive environment.)
 
-Interviewer: "You've participated in hackathons like @hack 2025 and ConUHacks IX. Can you describe a particularly challenging problem you encountered during one of these events and how you and your team approached solving it?"
+Interviewer: "Your project DRIP GENIUS utilizes K-means clustering for color analysis. Can you explain how you implemented this algorithm and its significance in the overall recommendation system?"
 
-Answer me: (Discuss a specific challenge, the thought process your team went through, any brainstorming techniques you used, and the final outcome of your efforts.)
+Answer me: (This question focuses on Ranjit's technical knowledge of machine learning concepts and their application in real-world scenarios, as well as his understanding of algorithm significance.)
 
-Interviewer: "Collaboration is key in software development. Can you share an experience where you had to work closely with a team during a project? What role did you play, and how did you ensure effective communication?"
+Interviewer: "Collaboration is crucial in software development. Can you describe a situation during your projects where you had to work closely with a teammate? What role did you play in ensuring effective communication?"
 
-Answer me: (Provide details on your role in the team, how you contributed to the project, and any tools or methods you used for communication and project management.)
+Answer me: (This question encourages Ranjit to reflect on his teamwork skills and communication strategies, which are important in collaborative environments.)
 
-Interviewer: "Looking ahead in your career, what are your aspirations in the tech field? Are there specific areas or technologies you are particularly excited to explore further?"
+Interviewer: "Looking ahead, what are your career goals after completing your degree in Software Engineering, and how do you see your skills in AI and web development contributing to those goals?"
 
-Answer me: (Share your career goals and aspirations, mentioning any specific technology trends or areas of interest that excite you, and how you plan to develop your skills in those areas.)
+Answer me: (This question gives Ranjit a chance to articulate his aspirations and how he plans to leverage his technical skills for future opportunities.)
 
-Interviewer: "I noticed your GitHub profile has several projects. Could you walk me through one of your favorite projects on GitHub, highlighting what you learned from it and how you think it showcases your skills?"
+Interviewer: "Lastly, I see you have a GitHub profile with several projects. Can you highlight one project that you are particularly proud of and explain why it stands out to you?"
 
-Answer me: (Choose a specific project from your GitHub, discuss the technical aspects of it, the challenges you faced, and how it reflects your skills and learning journey in software development.)
+Answer me: (This question prompts Ranjit to showcase his portfolio and discuss a project in detail, emphasizing his pride in his work and his ability to communicate its value.)

@@ -25,6 +25,7 @@ function App() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [sampleAnswer, setSampleAnswer] = useState('');
   const [isLoadingSampleAnswer, setIsLoadingSampleAnswer] = useState(false);
+  const [sampleAnswerCache, setSampleAnswerCache] = useState({});
   
   const synthRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -334,10 +335,23 @@ function App() {
 
   const handleRecommend = async () => {
     if (!showAnswer) {
-      // Fetch OpenAI-generated sample answer when showing
+      const currentQuestion = script[currentIndex].question;
+      const cacheKey = `${currentIndex}-${currentQuestion.substring(0, 50)}`;
+      
+      // Check if we have cached answer
+      if (sampleAnswerCache[cacheKey]) {
+        setSampleAnswer(sampleAnswerCache[cacheKey]);
+        setShowAnswer(true);
+        return;
+      }
+      
+      // Show static answer immediately for instant feedback
+      setSampleAnswer(script[currentIndex].answer);
+      setShowAnswer(true);
+      
+      // Then fetch enhanced answer in background
       setIsLoadingSampleAnswer(true);
       try {
-        const currentQuestion = script[currentIndex].question;
         const response = await fetch('http://localhost:5008/generate-sample-answer', {
           method: 'POST',
           headers: {
@@ -351,20 +365,24 @@ function App() {
         
         if (response.ok) {
           const result = await response.json();
-          setSampleAnswer(result.sample_answer);
-        } else {
-          // Fallback to static answer if API fails
-          setSampleAnswer(script[currentIndex].answer);
+          const enhancedAnswer = result.sample_answer;
+          
+          // Update with enhanced answer and cache it
+          setSampleAnswer(enhancedAnswer);
+          setSampleAnswerCache(prev => ({
+            ...prev,
+            [cacheKey]: enhancedAnswer
+          }));
         }
       } catch (error) {
-        console.error('Error fetching sample answer:', error);
-        // Fallback to static answer if API fails
-        setSampleAnswer(script[currentIndex].answer);
+        console.error('Error fetching enhanced sample answer:', error);
+        // Keep the static answer that's already showing
       } finally {
         setIsLoadingSampleAnswer(false);
       }
+    } else {
+      setShowAnswer(false);
     }
-    setShowAnswer(!showAnswer);
   };
 
   const cleanupUserData = async () => {

@@ -472,24 +472,33 @@ def generate_sample_answer():
             resume_context = f"\n\nCandidate Background:\n{resume_data.get('content', '')[:1000]}..."
         
         # Generate sample answer using OpenAI
-        prompt = f"""You are an expert interview coach. Generate a concise, professional sample answer (2-3 sentences) for this interview question that demonstrates best practices.
+        prompt = f"""Generate a natural, conversational sample answer (3-4 sentences) for this interview question. Provide only the direct answer content without any formatting, headers, or labels.
 
 Question: {question}
 
-Provide a sample answer that:
-- Is specific and actionable
-- Shows relevant experience or skills
-- Uses the STAR method when appropriate (Situation, Task, Action, Result)
-- Is conversational and natural
-- Avoids generic responses{resume_context}
+Requirements:
+- Write as if you're actually answering the question in an interview
+- Include specific examples with concrete details and measurable results
+- Use natural, conversational language
+- Mention relevant technologies and achievements
+- Keep it concise but impactful{resume_context}
 
-Sample Answer:"""
+Provide only the clean answer text:"""
         
         try:
             # Use the existing OpenAI system
             system = OpenAIInterviewSystem()
-            response = system.llm.invoke(prompt)
-            sample_answer = response.content.strip()
+            response = system.client.chat.completions.create(
+                model=system.model,
+                messages=[
+                    {"role": "system", "content": "You are an expert interview coach helping candidates prepare professional responses."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=300,  # Reduced for faster response
+                temperature=0.7,
+                timeout=5  # 5 second timeout for faster fallback
+            )
+            sample_answer = response.choices[0].message.content.strip()
             
             return jsonify({
                 "success": True,
