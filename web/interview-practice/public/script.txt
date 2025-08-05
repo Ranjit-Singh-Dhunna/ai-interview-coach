@@ -1,31 +1,31 @@
-Interviewer: "Hi Ranjit, it's great to meet you! I see you have a strong background in software engineering. Could you start by telling me about your experience with the programming languages listed on your resume, particularly Java and Python? How have you applied them in your projects?"
+Interviewer: "Hi Ranjit, it's great to meet you! I see you have a strong background in software engineering and a range of programming languages. Can you tell me about your experience with Java and how you've utilized it in your projects?"
 
-Answer me: (You could discuss specific projects where you used these languages, highlighting any challenges you faced and how you overcame them.)
+Answer me: (Provide a detailed explanation of your experience with Java, including specific projects or challenges you faced while using it.)
 
-Interviewer: "Your Click2Bill project sounds impressive, especially the automation aspect. Can you elaborate on the backend logic you developed using Google Apps Script and how it improved the workflow for users?"
+Interviewer: "I noticed you developed an automated invoicing system called Click2Bill. Can you elaborate on the technical challenges you faced while integrating Google Apps Script with HTML/CSS/JavaScript for this project?"
 
-Answer me: (Focus on the technical details of how the backend logic works, any specific challenges you faced during implementation, and the overall impact on user efficiency.)
+Answer me: (Discuss any specific issues you encountered, solutions you implemented, and the impact of the project on reducing manual data entry.)
 
-Interviewer: "I noticed you mentioned developing an AI-powered code review tool called Code Buddy. Can you walk me through the architecture of this project and how you integrated the AI service for code feedback?"
+Interviewer: "In your Code Buddy project, you mentioned the use of React and Node.js. Can you describe how you approached the frontend and backend integration for this AI-powered code review tool?"
 
-Answer me: (Discuss the technologies used, such as Node.js/Express and React, and how the interaction between the frontend and backend was designed for optimal performance.)
+Answer me: (Explain the technologies you used for the frontend and backend, how they communicate, and any challenges you faced during integration.)
 
-Interviewer: "In your DRIP GENIUS project, you utilized K-means clustering for color analysis. Can you explain your approach to implementing this feature and how you ensured the recommendations were relevant to the users' style?"
+Interviewer: "Your project DRIP GENIUS sounds fascinating, especially with its use of Roboflow and K-means clustering. Can you walk me through your thought process while designing the visual processing pipeline for this system?"
 
-Answer me: (Talk about the process you followed for feature implementation, any challenges in achieving accurate recommendations, and how you validated the output.)
+Answer me: (Detail the steps you took in designing the pipeline, the rationale behind using K-means clustering, and how the AI suggestions were generated.)
 
-Interviewer: "You participated in two hackathons, achieving notable rankings. Can you share a specific challenge you faced during these events and how you collaborated with your team to overcome it?"
+Interviewer: "With your participation in hackathons like @hack and ConUHacks IX, what was your approach to teamwork and collaboration under tight deadlines? Can you share an experience from one of these events?"
 
-Answer me: (Elaborate on a particular challenge, the role you played in the team, and the communication strategies you used to ensure effective collaboration.)
+Answer me: (Provide examples of how you collaborated with team members, any key roles you took on, and how you managed the pressure of a time-limited environment.)
 
-Interviewer: "Given your certifications in technical communication and human-centered AI, how do you see these skills enhancing your contributions to a software engineering team?"
+Interviewer: "As someone with a GPA of 3.26 and involvement in relevant courses, what specific skills or knowledge do you hope to acquire during your co-op at Concordia University that will aid in your career goals?"
 
-Answer me: (Discuss how technical communication can improve project documentation and teamwork, as well as how human-centered design can influence user experience in software development.)
+Answer me: (Discuss what you aim to learn or achieve during your co-op and how it aligns with your long-term career aspirations.)
 
-Interviewer: "I see you have a GitHub profile with your projects. Can you highlight one or two projects that you are most proud of and why? What feedback have you received from peers or users?"
+Interviewer: "I see you have a GitHub profile. Can you highlight a specific project on your GitHub that you are particularly proud of, and explain what makes it stand out?"
 
-Answer me: (Choose a couple of standout projects, explain their significance, and share any constructive feedback you received that helped you improve your work.)
+Answer me: (Choose a project from your GitHub that showcases your skills well, and explain its functionality, technologies used, and any unique features.)
 
-Interviewer: "Lastly, what are your career goals after completing your Bachelor of Engineering in Software Engineering? Where do you see yourself in the next few years?"
+Interviewer: "Lastly, I noticed your interest in continuous improvement methodologies like Six Sigma and Agile. How do you apply these methodologies in your software development process?"
 
-Answer me: (Reflect on your long-term aspirations in the tech industry, specific areas of interest, and how you plan to leverage your education and experience to achieve those goals.)
+Answer me: (Talk about how you incorporate these methodologies into your projects, including any specific examples of how they have improved your workflow or project outcomes.)

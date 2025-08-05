@@ -26,7 +26,7 @@ app = Flask(__name__)
 # Configure CORS to allow all routes from your React app
 CORS(app, resources={
     r"/*": {
-        "origins": "http://localhost:3000",
+        "origins": ["http://localhost:3000", "http://localhost:3001"],
         "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
         "allow_headers": ["Content-Type"],
         "supports_credentials": True,
@@ -441,6 +441,7 @@ def analyze_interview_endpoint():
             "status": "success",
             "message": "Interview analysis completed",
             "feedback_path": feedback_path,
+            "full_feedback": feedback,
             "feedback_preview": feedback[:500] + "..." if len(feedback) > 500 else feedback,
             "links_analyzed": len(resume_data.get('links', []))
         })

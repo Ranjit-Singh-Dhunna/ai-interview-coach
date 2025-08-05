@@ -21,6 +21,8 @@ function App() {
   const [resumeFile, setResumeFile] = useState(null);
   const [isUploadingResume, setIsUploadingResume] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   
   const synthRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -577,12 +579,79 @@ function App() {
                 </div>
                 
                 <div className="feedback-content">
-                  <h4>📝 Detailed Feedback:</h4>
-                  <div className="feedback-text">
-                    {analysisResult.feedback.split('\n').map((line, index) => (
-                      <p key={index}>{line}</p>
-                    ))}
+                  <div className="feedback-header">
+                    <h4>📝 Detailed Feedback:</h4>
+                    <div className="feedback-actions">
+                      <button 
+                        className="expand-feedback-btn"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                      >
+                        {isExpanded ? '📄 Collapse' : '📋 Expand Full'}
+                      </button>
+                      <button 
+                        className="copy-feedback-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(analysisResult.feedback);
+                          setCopySuccess(true);
+                          setTimeout(() => setCopySuccess(false), 2000);
+                        }}
+                      >
+                        {copySuccess ? '✅ Copied!' : '📋 Copy Text'}
+                      </button>
+                    </div>
                   </div>
+                  <div className={`feedback-text ${isExpanded ? 'expanded' : ''}`}>
+                    <div className="feedback-full-content">
+                      {analysisResult.feedback.split('\n\n').map((paragraph, index) => {
+                        if (paragraph.trim()) {
+                          // Check if it's a heading (starts with #)
+                          if (paragraph.trim().startsWith('#')) {
+                            const level = paragraph.match(/^#+/)[0].length;
+                            const text = paragraph.replace(/^#+\s*/, '');
+                            const HeadingTag = `h${Math.min(level + 2, 6)}`;
+                            return React.createElement(HeadingTag, { key: index, className: 'feedback-heading' }, text);
+                          }
+                          // Check if it's a list item
+                          else if (paragraph.trim().startsWith('- ') || paragraph.trim().startsWith('* ')) {
+                            const items = paragraph.split('\n').filter(item => item.trim());
+                            return (
+                              <ul key={index} className="feedback-list">
+                                {items.map((item, itemIndex) => (
+                                  <li key={itemIndex}>{item.replace(/^[-*]\s*/, '')}</li>
+                                ))}
+                              </ul>
+                            );
+                          }
+                          // Check if it's a numbered list
+                          else if (/^\d+\./.test(paragraph.trim())) {
+                            const items = paragraph.split('\n').filter(item => item.trim());
+                            return (
+                              <ol key={index} className="feedback-list">
+                                {items.map((item, itemIndex) => (
+                                  <li key={itemIndex}>{item.replace(/^\d+\.\s*/, '')}</li>
+                                ))}
+                              </ol>
+                            );
+                          }
+                          // Regular paragraph
+                          else {
+                            return <p key={index} className="feedback-paragraph">{paragraph}</p>;
+                          }
+                        }
+                        return null;
+                      })}
+                    </div>
+                  </div>
+                  {!isExpanded && (
+                    <div className="feedback-gradient-overlay">
+                      <button 
+                        className="show-more-btn"
+                        onClick={() => setIsExpanded(true)}
+                      >
+                        📖 Show Full Feedback
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -996,39 +996,179 @@ button.recording {
   padding: 20px;
   border-radius: 10px;
   backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .feedback-content h4 {
-  margin-top: 0;
+  margin: 0;
   color: #fff;
   font-size: 1.2em;
 }
 
+.feedback-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.expand-feedback-btn, .copy-feedback-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.expand-feedback-btn {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(116, 185, 255, 0.3);
+}
+
+.expand-feedback-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(116, 185, 255, 0.4);
+}
+
+.copy-feedback-btn {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+}
+
+.copy-feedback-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+}
+
 .feedback-text {
-  max-height: 400px;
-  overflow-y: auto;
+  max-height: 300px;
+  overflow: hidden;
   line-height: 1.6;
+  transition: max-height 0.5s ease;
+  position: relative;
 }
 
-.feedback-text p {
-  margin-bottom: 12px;
-  text-align: left;
+.feedback-text.expanded {
+  max-height: none;
+  overflow-y: auto;
 }
 
-.feedback-text::-webkit-scrollbar {
-  width: 8px;
+.feedback-text.expanded::-webkit-scrollbar {
+  width: 10px;
 }
 
-.feedback-text::-webkit-scrollbar-track {
+.feedback-text.expanded::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
-.feedback-text::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+.feedback-text.expanded::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5));
+  border-radius: 5px;
 }
 
-.feedback-text::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+.feedback-text.expanded::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7));
+}
+
+.feedback-full-content {
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.feedback-paragraph {
+  margin-bottom: 16px;
+  text-align: left;
+  line-height: 1.7;
+  font-size: 0.95em;
+}
+
+.feedback-heading {
+  color: #ffeaa7;
+  margin: 20px 0 12px 0;
+  font-weight: 700;
+  border-bottom: 2px solid rgba(255, 234, 167, 0.3);
+  padding-bottom: 8px;
+}
+
+.feedback-heading:first-child {
+  margin-top: 0;
+}
+
+.feedback-list {
+  margin: 16px 0;
+  padding-left: 25px;
+}
+
+.feedback-list li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.feedback-list ul, .feedback-list ol {
+  margin-top: 8px;
+  padding-left: 20px;
+}
+
+.feedback-gradient-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(transparent, rgba(240, 147, 251, 0.9));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 15px;
+  border-radius: 0 0 10px 10px;
+}
+
+.show-more-btn {
+  background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(253, 121, 168, 0.4);
+  font-size: 0.9em;
+}
+
+.show-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(253, 121, 168, 0.6);
+}
+
+@media (max-width: 768px) {
+  .feedback-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .feedback-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .expand-feedback-btn, .copy-feedback-btn {
+    flex: 1;
+    min-width: 120px;
+  }
 }
