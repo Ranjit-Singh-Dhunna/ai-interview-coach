@@ -27,8 +27,10 @@ function App() {
   const [isLoadingSampleAnswer, setIsLoadingSampleAnswer] = useState(false);
   const [sampleAnswerCache, setSampleAnswerCache] = useState({});
   const [jobDescription, setJobDescription] = useState('');
-  const [jobLink, setJobLink] = useState('');
   const [resumePath, setResumePath] = useState(null);
+  const [startClicked, setStartClicked] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(false);
+  const [videoError, setVideoError] = useState(null);
   
   const synthRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -36,6 +38,7 @@ function App() {
   const audioChunksRef = useRef([]);
   const recognitionRef = useRef(null);
   const shouldStartRecordingRef = useRef(false);
+  const videoRef = useRef(null);
 
   // Load the interview script from backend; fallback to public file if needed
   const loadScript = async () => {
@@ -141,6 +144,7 @@ function App() {
         synth.cancel();
       }
       stopRecording();
+      stopVideo();
     };
   }, []);
 
@@ -151,6 +155,17 @@ function App() {
       shouldStartRecordingRef.current = false;
     }
   }, [isSpeaking, currentIndex, isRecording]);
+
+  // Start/stop camera preview based on interview state
+  useEffect(() => {
+    const isInterviewActive = currentIndex >= 0 && currentIndex < script.length;
+    if (isInterviewActive && !videoEnabled) {
+      startVideo();
+    }
+    if (!isInterviewActive && videoEnabled) {
+      stopVideo();
+    }
+  }, [currentIndex, script.length, videoEnabled]);
 
   const parseScript = (text) => {
     const lines = text.split('\n');
@@ -270,6 +285,33 @@ function App() {
         recognitionRef.current.stop();
       }
     }
+  };
+
+  // Camera preview controls (no recording)
+  const startVideo = async () => {
+    try {
+      setVideoError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setVideoEnabled(true);
+    } catch (e) {
+      console.error('Error starting camera preview:', e);
+      setVideoError('Could not access camera. Please check permissions.');
+    }
+  };
+
+  const stopVideo = () => {
+    try {
+      const el = videoRef.current;
+      const stream = el && el.srcObject;
+      if (stream && typeof stream.getTracks === 'function') {
+        stream.getTracks().forEach(t => t.stop());
+      }
+      if (el) el.srcObject = null;
+    } catch (_) {}
+    setVideoEnabled(false);
   };
 
   const saveResponse = async (audioBlob) => {
@@ -398,6 +440,8 @@ function App() {
   };
 
   const handleProceed = () => {
+    if (startClicked) return;
+    setStartClicked(true);
     startInterview();
   };
   
@@ -414,11 +458,44 @@ function App() {
         return;
       }
       
-      // Show static answer immediately for instant feedback
-      setSampleAnswer(script[currentIndex].answer);
-      setShowAnswer(true);
+      // If no resume uploaded, generate a hypothetical, educational example (clearly not from resume)
+      if (!resumeFile && !resumePath) {
+        setShowAnswer(true);
+        setIsLoadingSampleAnswer(true);
+        try {
+          const response = await fetch('http://localhost:5008/generate-sample-answer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              question: currentQuestion,
+              allow_hypothetical: true,
+              forbid_specific_personal_claims: true,
+              no_company_names: true,
+              no_quantified_personal_results: true,
+              include_disclaimer: true,
+              job_description: jobDescription && jobDescription.trim() ? jobDescription.trim() : null
+            })
+          });
+          if (response.ok) {
+            const result = await response.json();
+            const hypo = result.sample_answer?.trim();
+            setSampleAnswer(hypo || 'Example approach: Describe the methodology, tools, and reasoning you would use.');
+          } else {
+            setSampleAnswer('Example approach: Describe the methodology, tools, and reasoning you would use.');
+          }
+        } catch (_) {
+          setSampleAnswer('Example approach: Describe the methodology, tools, and reasoning you would use.');
+        } finally {
+          setIsLoadingSampleAnswer(false);
+        }
+        return;
+      }
       
-      // Then fetch enhanced answer in background
+      // When resume exists, generate a personalized answer only (no generic fallback shown)
+      setSampleAnswer('');
+      setShowAnswer(true);
+
+      // Then fetch enhanced answer in background (looser: resume/job as optional context)
       setIsLoadingSampleAnswer(true);
       try {
         const response = await fetch('http://localhost:5008/generate-sample-answer', {
@@ -428,50 +505,59 @@ function App() {
           },
           body: JSON.stringify({
             question: currentQuestion,
-            resume_path: resumeFile ? `/Applications/interbuu/uploads/${resumeFile.name}` : null
+            // Provide context but allow the model to answer freely
+            resume_path: resumePath || (resumeFile ? `/Applications/interbuu/uploads/${resumeFile.name}` : null),
+            job_description: jobDescription && jobDescription.trim() ? jobDescription.trim() : null,
+            use_resume_as_context: true,
+            allow_hypothetical: true
           }),
         });
         
         if (response.ok) {
           const result = await response.json();
-          const enhancedAnswer = result.sample_answer;
-          
-          // Update with enhanced answer and cache it
-          setSampleAnswer(enhancedAnswer);
-          setSampleAnswerCache(prev => ({
-            ...prev,
-            [cacheKey]: enhancedAnswer
-          }));
+          const enhancedAnswer = result.sample_answer?.trim();
+          if (enhancedAnswer) {
+            setSampleAnswer(enhancedAnswer);
+            setSampleAnswerCache(prev => ({ ...prev, [cacheKey]: enhancedAnswer }));
+          } else {
+            // Fallback: hypothetical educational example
+            try {
+              const hypoResp = await fetch('http://localhost:5008/generate-sample-answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  question: currentQuestion,
+                  allow_hypothetical: true,
+                  forbid_specific_personal_claims: true,
+                  no_company_names: true,
+                  no_quantified_personal_results: true,
+                  include_disclaimer: true,
+                  job_description: jobDescription && jobDescription.trim() ? jobDescription.trim() : null
+                })
+              });
+              if (hypoResp.ok) {
+                const hypoJson = await hypoResp.json();
+                const hypo = hypoJson.sample_answer?.trim();
+                setSampleAnswer(hypo || 'Example approach: Describe the methodology, tools, and reasoning you would use.');
+              } else {
+                setSampleAnswer('Example approach: Describe the methodology, tools, and reasoning you would use.');
+              }
+            } catch (e) {
+              setSampleAnswer('Example approach: Describe the methodology, tools, and reasoning you would use.');
+            }
+          }
+        } else {
+          setSampleAnswer('No personalized answer available from your resume for this question.');
         }
-      } catch (error) {
-        console.error('Error fetching enhanced sample answer:', error);
-        // Keep the static answer that's already showing
+      } catch (err) {
+        console.error('Error generating sample answer:', err);
+        // Final fallback: generic educational example
+        setSampleAnswer('Example approach: Describe the methodology, tools, and reasoning you would use.');
       } finally {
         setIsLoadingSampleAnswer(false);
       }
     } else {
       setShowAnswer(false);
-    }
-  };
-
-  const cleanupUserData = async () => {
-    try {
-      console.log('Cleaning up user data for privacy...');
-      const response = await fetch('http://localhost:5008/cleanup-user-data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log('User data cleanup completed:', result.message);
-      } else {
-        console.warn('Failed to cleanup user data');
-      }
-    } catch (error) {
-      console.error('Error during cleanup:', error);
     }
   };
 
@@ -529,9 +615,6 @@ function App() {
       const payload = { resume_path: resumePath };
       if (jobDescription && jobDescription.trim()) {
         payload.job_description = jobDescription.trim();
-      }
-      if (jobLink && jobLink.trim()) {
-        payload.job_link = jobLink.trim();
       }
 
       const response = await fetch('http://localhost:5008/generate-questions', {
@@ -661,6 +744,23 @@ function App() {
             </div>
           )}
 
+          {/* Live camera preview for confidence only; video is not recorded */}
+          <div className="camera-preview" style={{ marginTop: '12px' }}>
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              style={{ width: '240px', height: '170px', borderRadius: '10px', background: '#000' }}
+            />
+            <div style={{ fontSize: '0.85em', color: '#666', marginTop: '4px' }}>
+              Live preview only (not recorded)
+            </div>
+            {videoError && (
+              <div className="error-message" style={{ marginTop: '6px' }}>{videoError}</div>
+            )}
+          </div>
+
           {isRecording && (
             <div className="recording-section">
               <div className="recording-indicator">
@@ -686,14 +786,13 @@ function App() {
           <p>Check your responses in the answers.txt file.</p>
           
           <div className="analysis-section">
-            <button 
-              className="analyze-btn"
-              onClick={analyzeInterview}
-              disabled={isAnalyzing}
-            >
-              {isAnalyzing ? '🔍 Analyzing...' : '🔍 Get AI Feedback & Analysis'}
-            </button>
-            
+            {!analysisResult && (
+              <div className="analyzing-status">
+                <div className="loading-spinner"></div>
+                <div>Analyzing your interview... This may take up to ~20 seconds.</div>
+              </div>
+            )}
+
             {analysisResult && (
               <div className="analysis-result">
                 <h3>📊 Interview Analysis Complete!</h3>
@@ -753,7 +852,8 @@ function App() {
                   <div className={`feedback-text ${isExpanded ? 'expanded' : ''}`}>
                     <div className="feedback-full-content">
                       {analysisResult.feedback.split('\n\n').map((rawParagraph, index) => {
-                        const paragraph = (rawParagraph ?? '').replace(/\r/g, '');
+                        const stripMarkdownBold = (s) => (s || '').replace(/\*\*(.*?)\*\*/g, '$1');
+                        const paragraph = stripMarkdownBold((rawParagraph ?? '').replace(/\r/g, ''));
                         const trimmed = paragraph.trim();
                         if (!trimmed) return null;
 
@@ -761,7 +861,7 @@ function App() {
                         const headingMatch = trimmed.match(/^#+/);
                         if (headingMatch) {
                           const level = headingMatch[0].length;
-                          const text = trimmed.replace(/^#+\s*/, '');
+                          const text = stripMarkdownBold(trimmed.replace(/^#+\s*/, ''));
                           const HeadingTag = `h${Math.min(level + 2, 6)}`;
                           return React.createElement(HeadingTag, { key: index, className: 'feedback-heading' }, text);
                         }
@@ -771,9 +871,10 @@ function App() {
                           const items = paragraph.split('\n').map(i => i.trim()).filter(Boolean);
                           return (
                             <ul key={index} className="feedback-list">
-                              {items.map((item, itemIndex) => (
-                                <li key={itemIndex}>{item.replace(/^[-*]\s+/, '')}</li>
-                              ))}
+                              {items.map((item, itemIndex) => {
+                                const clean = stripMarkdownBold(item.replace(/^[-*]\s+/, ''));
+                                return <li key={itemIndex}>{clean}</li>;
+                              })}
                             </ul>
                           );
                         }
@@ -783,15 +884,16 @@ function App() {
                           const items = paragraph.split('\n').map(i => i.trim()).filter(Boolean);
                           return (
                             <ol key={index} className="feedback-list">
-                              {items.map((item, itemIndex) => (
-                                <li key={itemIndex}>{item.replace(/^\d+\.\s+/, '')}</li>
-                              ))}
+                              {items.map((item, itemIndex) => {
+                                const clean = stripMarkdownBold(item.replace(/^\d+\.\s+/, ''));
+                                return <li key={itemIndex}>{clean}</li>;
+                              })}
                             </ol>
                           );
                         }
 
                         // Regular paragraph
-                        return <p key={index} className="feedback-paragraph">{paragraph}</p>;
+                        return <p key={index} className="feedback-paragraph">{stripMarkdownBold(paragraph)}</p>;
                       })}
                     </div>
                   </div>
@@ -848,7 +950,7 @@ function App() {
 
               <div className="job-context-section">
                 <h3>🧭 Optional: Target Job Context</h3>
-                <p>Paste a job description or provide a link to tailor questions for a specific role. Leave blank to skip.</p>
+                <p>Paste a job description to tailor questions for a specific role. Leave blank to skip.</p>
                 <textarea
                   placeholder="Paste job description (optional)"
                   value={jobDescription}
@@ -856,25 +958,8 @@ function App() {
                   rows={6}
                   style={{ width: '100%', marginTop: '8px' }}
                 />
-                <input
-                  type="url"
-                  placeholder="Job posting link (optional)"
-                  value={jobLink}
-                  onChange={(e) => setJobLink(e.target.value)}
-                  style={{ width: '100%', marginTop: '8px' }}
-                />
-                <div style={{ fontSize: '0.9em', color: '#666', marginTop: '6px' }}>
-                  We only send this if you fill it in.
-                </div>
               </div>
-              
-              <div className="or-divider">
-                <span>OR</span>
-              </div>
-              
-              <button className="start-btn" onClick={startInterview}>
-                🎤 Start with Default Questions
-              </button>
+              {/* Removed alternate start button and OR divider as requested */}
             </div>
           ) : (
             <div className="welcome-buttons">
@@ -892,29 +977,9 @@ function App() {
                   rows={5}
                   style={{ width: '100%', marginTop: '8px' }}
                 />
-                <input
-                  type="url"
-                  placeholder="Job posting link (optional)"
-                  value={jobLink}
-                  onChange={(e) => setJobLink(e.target.value)}
-                  style={{ width: '100%', marginTop: '8px' }}
-                />
               </div>
               
-              <button 
-                className="start-btn" 
-                onClick={startInterview}
-                disabled={isGeneratingQuestions}
-              >
-                {isGeneratingQuestions ? (
-                  <>
-                    <div className="loading-spinner"></div>
-                    Generating Questions...
-                  </>
-                ) : (
-                  <>🎤 Start Interview</>
-                )}
-              </button>
+              {/* Removed duplicate Start Interview button (mic emoji) to keep a single start entry point */}
             </div>
           )}
         </div>
@@ -939,7 +1004,7 @@ function App() {
           <button 
             id="start" 
             onClick={handleProceed}
-            disabled={script.length === 0}
+            disabled={isGeneratingQuestions || startClicked || script.length === 0}
           >
             Start Interview
           </button>
@@ -951,6 +1016,7 @@ function App() {
               setCurrentIndex(-1);
               setShowAnswer(false);
               stopSpeaking();
+              setStartClicked(false);
             }}
           >
             Restart Interview
@@ -966,7 +1032,7 @@ function App() {
         )}
       </div>
 
-      {script.length > 0 && (
+      {script.length > 0 && !isUploadingResume && currentIndex >= 0 && (
         <div className="progress">
           <div>
             {currentIndex >= script.length 

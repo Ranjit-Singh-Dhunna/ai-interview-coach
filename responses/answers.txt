@@ -1,0 +1,92 @@
+# Interview Answers Log
+
+---
+Timestamp: 2025-08-15T22:55:24.902Z
+Question: "Hello Ranjit, thank you for joining us today! I see you have a strong background in full-stack development. Can you tell me about your experience with the MEAN stack, especially with MongoDB, Express, Angular, and Node.js, and how you’ve applied these technologies in your projects?"
+Transcript: Hello, this is question one.
+
+---
+Timestamp: 2025-08-15T22:55:43.182Z
+Question: "I noticed you developed the DRIP GENIUS project, which involved a Flask-based backend and a dynamic frontend. Can you elaborate on the challenges you faced while integrating the image validation and recommendation logic, and how you overcame them?"
+Transcript: Hi, this is Gautam too.
+
+---
+Timestamp: 2025-08-15T22:56:00.575Z
+Question: "In your Click2Bill project, you automated invoice generation using Google Sheets and Apps Script. Can you explain the thought process behind designing the backend logic for this system and how it improved efficiency for users?"
+Transcript: Hi this is question 3
+
+---
+Timestamp: 2025-08-15T22:56:38.465Z
+Question: "Collaboration is key in a startup environment like CarInspect. Can you share an experience where you worked as part of a team on a project, and how you ensured effective communication and collaboration among team members?"
+Transcript: Bye, I guess.
+
+---
+Timestamp: 2025-08-15T23:03:39.966Z
+Question: "Hi Ranjit, thank you for joining us today! I hope you’re doing well. Let’s dive into your background. Can you tell me about your experience with Flask in your DRIP GENIUS project and how you handled the backend development?"
+Transcript: Um, hi there. Yo yo yo.
+
+---
+Timestamp: 2025-08-15T23:03:59.741Z
+Question: "In your Click2Bill project, you mentioned reducing manual data entry time by 70%. Can you walk me through the specific features you implemented in Google Apps Script that contributed to this efficiency?"
+Transcript: hmm nice Nice nice
+
+---
+Timestamp: 2025-08-15T23:04:20.834Z
+Question: "You have notable experience with both frontend and backend technologies, including React.js and Node.js. How do you approach integrating these technologies to create a seamless user experience?"
+Transcript: Oh my god!
+
+---
+Timestamp: 2025-08-15T23:04:38.011Z
+Question: "I see you participated in several hackathons, including @hack and ConUHacks IX. Can you share an experience from one of these events where you had to collaborate with a team to solve a problem under pressure?"
+Transcript: Oh my god! Nice job!
+
+---
+Timestamp: 2025-08-15T23:07:41.375Z
+Question: "Hi Ranjit, thank you for joining us today! I hope you're doing well. To start off, could you tell us more about your experience with the technologies used in your project DRIP GENIUS, particularly how you utilized K-means clustering and Gemini AI for generating outfit recommendations?"
+Transcript: You are a great guy Wow you are so Oh my god bro
+
+---
+Timestamp: 2025-08-15T23:10:59.470Z
+Question: "Hello Ranjit, it’s great to meet you! I’m excited to discuss your background and how it aligns with the opportunities at CarInspect."
+Transcript: Oh my god bro, oh my god bro, oh my god bro, oh my god bro, you are fucking idiot I guess. Hello it's great to meet you too, I have 5 years experience on my own.
+
+---
+Timestamp: 2025-08-15T23:11:11.202Z
+Question: "Can you walk us through your project, 'DRIP GENIUS'? What specific challenges did you face when developing the real-time web-based system, and how did you overcome them?"
+Transcript: [Audio too short or unclear for transcription]
+
+---
+Timestamp: 2025-08-15T23:11:24.932Z
+Question: "You mentioned using Flask for the backend in 'DRIP GENIUS'. Can you explain how you structured the RESTful API and how it facilitated the communication between the frontend and backend?"
+Transcript: Yeah, baby
+
+---
+Timestamp: 2025-08-15T23:11:54.510Z
+Question: "In your project 'Click2Bill', you automated invoicing using Google Apps Script. Can you describe the workflow you implemented and how it improved efficiency for users?"
+Transcript: Yeah baby generating personalized sample answers oh that's really sick I guess in your project click to build you are so much more is using this and that and that and this
+
+---
+Timestamp: 2025-08-15T23:12:17.781Z
+Question: "Collaboration is vital in a startup environment. Can you share an experience from your hackathons where teamwork played a crucial role in your project’s success?"
+Transcript: Hmmmmmmmmmmm yo what up nigga? What up nigga? What up nigga? Nanananananana I know what you want bro
+
+---
+Timestamp: 2025-08-15T23:13:06.592Z
+Question: "Given your experience with both frontend and backend technologies, how do you ensure quality and performance in your code? Can you provide an example from your projects?"
+Transcript: Yeah baby why not? Just speak up bro. I am waiting for personal answers. You know I cannot sing but I'm still singing. Should I sing or should I not sing? Oh my god. Are you serious? Damn bro.
+
+---
+Timestamp: 2025-08-15T23:13:40.749Z
+Question: "CarInspect is looking for someone who is eager to learn and adapt. What are some new technologies or skills you are currently interested in exploring, and how do you plan to integrate them into your work?"
+Transcript: I'm waiting for generated... personalized simple answers guess I will take a long time to get that answer I'm really interested in exploring what I'm searching What the fuck? Oh hell no bro, oh hell-
+
+---
+Timestamp: 2025-08-15T23:16:19.846Z
+Question: "Hello Ranjit, thank you for joining us today! I'm excited to learn more about your experiences and how they align with our team at CarInspect."
+Transcript: Yeah baby, what's up baby? Yo, yo!
+
+---
+Timestamp: 2025-08-15T23:16:38.249Z
+Question: "I noticed that you have developed a web-based system called DRIP GENIUS, which utilizes Roboflow object detection and Gemini AI recommendation logic. Can you walk us through the technical challenges you faced during this project and how you overcame them?"
+Transcript: Yah baby, what's up, bro?
+

@@ -1,45 +1,35 @@
-Interviewer: "Hi Ranjit, it's great to meet you! I'm excited to learn more about your experiences and projects. To start, can you describe your experience with Java and how you've applied it in your projects or coursework?"
+Interviewer: "Hello Ranjit, thank you for joining us today! I'm excited to learn more about your experiences and how they align with our team at CarInspect."
 
-Answer me: (You can discuss specific Java projects or assignments you completed during your studies, highlighting any challenges you faced and how you overcame them.)
+Answer me: (This is a great time to make a positive first impression and express enthusiasm for the opportunity.)
 
----
+Interviewer: "I noticed that you have developed a web-based system called DRIP GENIUS, which utilizes Roboflow object detection and Gemini AI recommendation logic. Can you walk us through the technical challenges you faced during this project and how you overcame them?"
 
-Interviewer: "I see you developed DRIP GENIUS, a personalized outfit recommendation system. Can you walk me through the technical stack you used for this project and how you integrated the Roboflow object detection and Gemini AI recommendation logic?"
+Answer me: (Focus on specific technical hurdles, perhaps around integrating AI or managing data flow, and highlight your problem-solving skills.)
 
-Answer me: (Focus on the technologies you used, such as Python with Flask for the backend, and how you implemented the visual processing pipeline and AI integration.)
+Interviewer: "Your Click2Bill project involved automating the invoicing process using Google Sheets and Google Apps Script. How did you ensure the reliability and accuracy of the automated system, and what measures did you take to handle potential errors?"
 
----
+Answer me: (Discuss your approach to testing and validation, as well as any error-handling strategies you implemented in the project.)
 
-Interviewer: "In your Click2Bill project, you mentioned automating the invoicing process significantly reduced manual data entry time. Can you elaborate on the challenges you faced while implementing this automation with Google Apps Script and how you ensured the system was reliable?"
+Interviewer: "In your experience with hackathons, you mentioned working on a 2D multiplayer shooter game at ConUHacks IX. Can you elaborate on your role in the team, particularly how you collaborated with others to achieve your goal?"
 
-Answer me: (Discuss any specific obstacles you encountered during development and how you validated the system's reliability and accuracy in processing invoices.)
+Answer me: (Highlight your teamwork skills and how you contributed to the project, whether through coding, design, or project management.)
 
----
+Interviewer: "Given your proficiency in Java, JavaScript, and Python, how do you choose which programming language to use for a specific project? Can you give an example from your past projects?"
 
-Interviewer: "During the development of Code Buddy, how did you ensure the performance and scalability of the application, especially when integrating AI feedback mechanisms? Were there any specific design patterns or practices you followed?"
+Answer me: (This is an opportunity to showcase your understanding of language strengths and your decision-making process based on project requirements.)
 
-Answer me: (Share insights on the architectural decisions you made, how you implemented modular design, and any performance metrics you monitored.)
+Interviewer: "As CarInspect is focused on automating vehicle inspection processes, can you describe your familiarity with API integrations and how you would approach integrating a third-party API, like Google Maps, into a project?"
 
----
+Answer me: (Discuss any relevant experiences or theoretical approaches you would take, emphasizing your adaptability and willingness to learn new technologies.)
 
-Interviewer: "Collaboration is key in software development. Can you describe a situation during your hackathon experiences, such as at the @hack 2025 Hackathon, where you worked as part of a team? What was your role, and how did you contribute to the team's success?"
+Interviewer: "I see that you are interested in AI ethics and have worked on an AI-powered tool like Code Buddy. How do you ensure that the AI systems you develop are fair and transparent?"
 
-Answer me: (Reflect on your specific contributions, any challenges in team dynamics, and how you resolved them to ensure productive collaboration.)
+Answer me: (Share your thoughts on ethical considerations in AI development and any specific practices you follow to mitigate bias.)
 
----
+Interviewer: "Lastly, looking at your career goals, how do you envision your growth in a startup environment like CarInspect, and what specific skills are you hoping to develop during your time with us?"
 
-Interviewer: "Looking at your education, you have a strong foundation in data structures and algorithms. Can you explain how you apply this knowledge in your coding practices, particularly in your projects?"
+Answer me: (Express your eagerness to learn and grow, aligning your aspirations with the opportunities available at CarInspect.)
 
-Answer me: (Discuss how you utilized data structures in your projects, perhaps in optimizing algorithms or enhancing performance.)
+Interviewer: "Do you have any specific projects on your GitHub that you would like to discuss, particularly those that showcase your skills relevant to the full-stack developer role we are hiring for?"
 
----
-
-Interviewer: "I noticed you have a keen interest in AI ethics. How do you think ethical considerations play a role in your projects, especially with AI integration like in DRIP GENIUS and Code Buddy?"
-
-Answer me: (Share your thoughts on the importance of ethical AI, any specific standards you follow, and how you incorporate user feedback into your projects.)
-
----
-
-Interviewer: "Finally, I’d love to hear about your career aspirations. What are your goals as you pursue a developer internship, and how do you see this role contributing to your long-term career in software engineering?"
-
-Answer me: (Articulate your future goals, what skills you hope to gain from the internship, and how they align with your aspirations in the tech industry.)
+Answer me: (Be prepared to highlight a couple of projects, explaining the technologies used and the impact they had, as well as any challenges faced during development.)
