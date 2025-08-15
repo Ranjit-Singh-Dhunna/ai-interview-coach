@@ -28,8 +28,12 @@ module.exports = {
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),
+      // Do not watch static files to avoid full-page reloads when backend rewrites
+      watch: false,
     },
     port: 3000,
-    hot: true
+    hot: true,
+    // Prevent liveReload on static asset changes (we manage data via fetch)
+    liveReload: false
   }
 };

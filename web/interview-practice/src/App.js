@@ -34,6 +34,57 @@ function App() {
   const recognitionRef = useRef(null);
   const shouldStartRecordingRef = useRef(false);
 
+  // Load the interview script from backend; fallback to public file if needed
+  const loadScript = async () => {
+    try {
+      const ts = Date.now();
+      // Try backend endpoint first
+      let response = await fetch(`http://localhost:5008/script?ts=${ts}`, { cache: 'no-store' });
+      if (!response.ok) {
+        // Fallback to public file (dev only)
+        response = await fetch(`/script.txt?ts=${ts}`, { cache: 'no-store' });
+      }
+      if (!response.ok) throw new Error('Failed to load script');
+      const text = await response.text();
+      parseScript(text);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Retry loader to refresh questions after regeneration without triggering reloads
+  const loadScriptWithRetry = async (maxAttempts = 5, delayMs = 400) => {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const cacheBuster = Date.now();
+        let resp = await fetch(`http://localhost:5008/script?ts=${cacheBuster}`, { cache: 'no-store' });
+        if (!resp.ok) {
+          // Fallback to public file during dev
+          resp = await fetch(`/script.txt?ts=${cacheBuster}`, { cache: 'no-store' });
+        }
+        if (!resp.ok) throw new Error(`Fetch failed (${resp.status})`);
+        const text = await resp.text();
+        if (text && text.trim().length > 0) {
+          parseScript(text);
+          return true;
+        }
+      } catch (e) {
+        // wait and retry
+        if (attempt < maxAttempts) {
+          await new Promise(r => setTimeout(r, delayMs));
+          continue;
+        } else {
+          console.error('Failed to refresh script after generation:', e);
+          setSaveError('Questions generated, but failed to load the updated script. Please try again.');
+          return false;
+        }
+      }
+    }
+    return false;
+  };
+
   // Initialize speech synthesis and recognition
   useEffect(() => {
     const initSpeech = () => {
@@ -74,19 +125,6 @@ function App() {
         stopRecording();
       };
     }
-
-    const loadScript = async () => {
-      try {
-        const response = await fetch('/script.txt');
-        if (!response.ok) throw new Error('Failed to load script');
-        const text = await response.text();
-        parseScript(text);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     loadScript();
     
@@ -474,8 +512,8 @@ function App() {
       const result = await response.json();
       console.log('Questions generated successfully:', result);
       
-      // Reload the script to get new questions
-      await loadScript();
+      // Reload the script to get new questions (retry to avoid race/caching)
+      await loadScriptWithRetry(6, 500);
       
       // Reset interview state
       setCurrentIndex(-1);
@@ -688,43 +726,46 @@ function App() {
                   </div>
                   <div className={`feedback-text ${isExpanded ? 'expanded' : ''}`}>
                     <div className="feedback-full-content">
-                      {analysisResult.feedback.split('\n\n').map((paragraph, index) => {
-                        if (paragraph.trim()) {
-                          // Check if it's a heading (starts with #)
-                          if (paragraph.trim().startsWith('#')) {
-                            const level = paragraph.match(/^#+/)[0].length;
-                            const text = paragraph.replace(/^#+\s*/, '');
-                            const HeadingTag = `h${Math.min(level + 2, 6)}`;
-                            return React.createElement(HeadingTag, { key: index, className: 'feedback-heading' }, text);
-                          }
-                          // Check if it's a list item
-                          else if (paragraph.trim().startsWith('- ') || paragraph.trim().startsWith('* ')) {
-                            const items = paragraph.split('\n').filter(item => item.trim());
-                            return (
-                              <ul key={index} className="feedback-list">
-                                {items.map((item, itemIndex) => (
-                                  <li key={itemIndex}>{item.replace(/^[-*]\s*/, '')}</li>
-                                ))}
-                              </ul>
-                            );
-                          }
-                          // Check if it's a numbered list
-                          else if (/^\d+\./.test(paragraph.trim())) {
-                            const items = paragraph.split('\n').filter(item => item.trim());
-                            return (
-                              <ol key={index} className="feedback-list">
-                                {items.map((item, itemIndex) => (
-                                  <li key={itemIndex}>{item.replace(/^\d+\.\s*/, '')}</li>
-                                ))}
-                              </ol>
-                            );
-                          }
-                          // Regular paragraph
-                          else {
-                            return <p key={index} className="feedback-paragraph">{paragraph}</p>;
-                          }
+                      {analysisResult.feedback.split('\n\n').map((rawParagraph, index) => {
+                        const paragraph = (rawParagraph ?? '').replace(/\r/g, '');
+                        const trimmed = paragraph.trim();
+                        if (!trimmed) return null;
+
+                        // Headings: allow leading spaces before '#'
+                        const headingMatch = trimmed.match(/^#+/);
+                        if (headingMatch) {
+                          const level = headingMatch[0].length;
+                          const text = trimmed.replace(/^#+\s*/, '');
+                          const HeadingTag = `h${Math.min(level + 2, 6)}`;
+                          return React.createElement(HeadingTag, { key: index, className: 'feedback-heading' }, text);
                         }
-                        return null;
+
+                        // Bulleted list (allow leading spaces)
+                        if (/^[-*]\s+/.test(trimmed)) {
+                          const items = paragraph.split('\n').map(i => i.trim()).filter(Boolean);
+                          return (
+                            <ul key={index} className="feedback-list">
+                              {items.map((item, itemIndex) => (
+                                <li key={itemIndex}>{item.replace(/^[-*]\s+/, '')}</li>
+                              ))}
+                            </ul>
+                          );
+                        }
+
+                        // Numbered list
+                        if (/^\d+\.\s+/.test(trimmed)) {
+                          const items = paragraph.split('\n').map(i => i.trim()).filter(Boolean);
+                          return (
+                            <ol key={index} className="feedback-list">
+                              {items.map((item, itemIndex) => (
+                                <li key={itemIndex}>{item.replace(/^\d+\.\s+/, '')}</li>
+                              ))}
+                            </ol>
+                          );
+                        }
+
+                        // Regular paragraph
+                        return <p key={index} className="feedback-paragraph">{paragraph}</p>;
                       })}
                     </div>
                   </div>

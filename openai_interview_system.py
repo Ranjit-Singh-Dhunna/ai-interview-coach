@@ -23,7 +23,8 @@ class OpenAIInterviewSystem:
                 "3. Restart the Flask server"
             )
         self.client = OpenAI(api_key=api_key)
-        self.model = "gpt-4o-mini"  # Cost-effective model for interview tasks
+        # Allow overriding the model from ENV; default to a cost-effective model
+        self.model = os.getenv('OPENAI_MODEL', "gpt-4o-mini")
         
     def extract_resume_data_and_links(self, pdf_path: str) -> Dict:
         """Extract text and links from resume PDF"""
@@ -108,22 +109,31 @@ class OpenAIInterviewSystem:
         Generate a professional, personalized interview script now:
         """
         
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are an expert technical interviewer who creates personalized interview questions based on candidate resumes."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
-            
-            return response.choices[0].message.content
-            
-        except Exception as e:
-            print(f"Error generating questions: {e}")
-            return self._get_fallback_questions()
+        # Retry with simple exponential backoff to mitigate transient 429/5xx/timeouts
+        import time
+        attempts = 3
+        for attempt in range(1, attempts + 1):
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": "You are an expert technical interviewer who creates personalized interview questions based on candidate resumes."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.6,
+                    max_tokens=1200,
+                    timeout=20
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                err_text = str(e)
+                print(f"[generate_interview_questions] Attempt {attempt}/{attempts} failed: {err_text}")
+                if attempt < attempts:
+                    sleep_s = 2 ** attempt
+                    time.sleep(sleep_s)
+                else:
+                    print("[generate_interview_questions] All attempts failed. Using fallback questions.")
+                    return self._get_fallback_questions()
     
     def analyze_links_content(self, links: List[str]) -> Dict:
         """Analyze content from resume links (GitHub, portfolio, etc.)"""

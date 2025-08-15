@@ -1,31 +1,19 @@
-Interviewer: "Hi Ranjit, it's great to meet you! To start, can you tell me about your experience with Java and how you've applied it in your projects or coursework?"
 
-Answer me: (This question allows Ranjit to showcase his proficiency in Java and contextualize it with real examples from his studies or projects, demonstrating his understanding of the language.)
-
-Interviewer: "I noticed you developed an automated invoicing system called Click2Bill. Can you walk me through the backend logic you implemented and explain how it improved efficiency for users?"
-
-Answer me: (This question encourages Ranjit to discuss his technical skills in Google Apps Script, backend development, and the practical impact of his project on reducing manual data entry.)
-
-Interviewer: "In your project Code Buddy, you integrated an AI service for code review. What challenges did you face during the integration, and how did you address them?"
-
-Answer me: (This question allows Ranjit to discuss problem-solving and adaptability in the context of technical challenges, as well as his experience with AI service integration.)
-
-Interviewer: "You mentioned participating in hackathons, including a cybersecurity one where you ranked 6th out of over 600 participants. Can you share a specific vulnerability you explored and how your team approached it?"
-
-Answer me: (This question gives Ranjit an opportunity to demonstrate his knowledge of cybersecurity principles, teamwork, and practical application of skills in a competitive environment.)
-
-Interviewer: "Your project DRIP GENIUS utilizes K-means clustering for color analysis. Can you explain how you implemented this algorithm and its significance in the overall recommendation system?"
-
-Answer me: (This question focuses on Ranjit's technical knowledge of machine learning concepts and their application in real-world scenarios, as well as his understanding of algorithm significance.)
-
-Interviewer: "Collaboration is crucial in software development. Can you describe a situation during your projects where you had to work closely with a teammate? What role did you play in ensuring effective communication?"
-
-Answer me: (This question encourages Ranjit to reflect on his teamwork skills and communication strategies, which are important in collaborative environments.)
-
-Interviewer: "Looking ahead, what are your career goals after completing your degree in Software Engineering, and how do you see your skills in AI and web development contributing to those goals?"
-
-Answer me: (This question gives Ranjit a chance to articulate his aspirations and how he plans to leverage his technical skills for future opportunities.)
-
-Interviewer: "Lastly, I see you have a GitHub profile with several projects. Can you highlight one project that you are particularly proud of and explain why it stands out to you?"
-
-Answer me: (This question prompts Ranjit to showcase his portfolio and discuss a project in detail, emphasizing his pride in his work and his ability to communicate its value.)
+        Interviewer: "Hello! Thank you for taking the time to interview with us today. Could you please start by telling me about yourself and your professional background?"
+        Answer me: (Provide a brief overview of your experience, key skills, and what drives you professionally)
+        
+        Interviewer: "What programming languages and technologies are you most comfortable working with?"
+        Answer me: (Mention your strongest technical skills and provide examples of how you've used them)
+        
+        Interviewer: "Can you walk me through a challenging project you've worked on recently?"
+        Answer me: (Describe the project, your role, challenges faced, and how you overcame them)
+        
+        Interviewer: "How do you approach problem-solving when faced with a technical challenge?"
+        Answer me: (Explain your methodology, tools you use, and how you break down complex problems)
+        
+        Interviewer: "Tell me about a time you had to work collaboratively with a team."
+        Answer me: (Share a specific example highlighting your teamwork and communication skills)
+        
+        Interviewer: "What are your career goals and how does this position align with them?"
+        Answer me: (Connect your aspirations with the role and show your motivation)
+        

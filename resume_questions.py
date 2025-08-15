@@ -43,6 +43,10 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 # Create upload directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Directory to store generated artifacts away from the frontend to avoid dev-server reloads
+GENERATED_DIR = '/Applications/interbuu/generated'
+os.makedirs(GENERATED_DIR, exist_ok=True)
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -359,13 +363,13 @@ def generate_questions_endpoint():
         # Generate questions using OpenAI
         questions, resume_data = generate_new_questions(resume_path)
         
-        # Save the generated script
-        script_path = "/Applications/interbuu/web/interview-practice/public/script.txt"
+        # Save the generated script to backend-only directory
+        script_path = os.path.join(GENERATED_DIR, "script.txt")
         save_to_file(questions, script_path)
         
         # Extract and save just interviewer questions
         interviewer_lines = extract_interviewer_lines(questions)
-        questions_path = "/Applications/interbuu/web/interview-practice/public/questions.txt"
+        questions_path = os.path.join(GENERATED_DIR, "questions.txt")
         save_to_file(interviewer_lines, questions_path)
         
         print("Successfully generated and saved new questions")
@@ -416,6 +420,28 @@ def upload_resume():
         print(f"[upload_resume] Error: {str(e)}")
         return jsonify({"error": f"Upload failed: {str(e)}"}), 500
 
+@app.route('/script', methods=['GET'])
+def get_script():
+    """Return the latest generated interview script as plain text with no-cache headers"""
+    try:
+        script_file = os.path.join(GENERATED_DIR, 'script.txt')
+        if not os.path.exists(script_file):
+            # Fallback to old location if needed
+            legacy_path = "/Applications/interbuu/web/interview-practice/public/script.txt"
+            if os.path.exists(legacy_path):
+                script_file = legacy_path
+            else:
+                return jsonify({"error": "Script not found"}), 404
+        with open(script_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        resp = app.response_class(response=content, status=200, mimetype='text/plain')
+        resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        resp.headers['Pragma'] = 'no-cache'
+        return resp
+    except Exception as e:
+        return jsonify({"error": f"Failed to read script: {str(e)}"}), 500
+
+
 @app.route('/analyze-interview', methods=['POST'])
 def analyze_interview_endpoint():
     """Phase 3: Analyze interview performance and provide feedback"""
@@ -431,20 +457,91 @@ def analyze_interview_endpoint():
         # First extract resume data
         system = OpenAIInterviewSystem()
         resume_data = system.extract_resume_data_and_links(resume_path)
-        
-        # Analyze the interview performance
-        feedback, feedback_path = analyze_interview_and_links(answers_path, resume_data)
-        
-        print(f"Analysis complete. Feedback saved to: {feedback_path}")
-        
-        return jsonify({
-            "status": "success",
-            "message": "Interview analysis completed",
-            "feedback_path": feedback_path,
-            "full_feedback": feedback,
-            "feedback_preview": feedback[:500] + "..." if len(feedback) > 500 else feedback,
-            "links_analyzed": len(resume_data.get('links', []))
-        })
+
+        need_fallback = False
+        err_text = ""
+        rate_limited = False
+        try:
+            # Primary: OpenAI analysis
+            feedback, feedback_path = analyze_interview_and_links(answers_path, resume_data)
+
+            # Detect string-based error returned from helper (does not raise)
+            fb_lower = (feedback or "").lower()
+            rate_limited = ('rate limit' in fb_lower) or ('429' in fb_lower)
+            is_error_string = fb_lower.startswith("error analyzing interview performance") or rate_limited
+
+            if not is_error_string:
+                print(f"Analysis complete. Feedback saved to: {feedback_path}")
+                return jsonify({
+                    "status": "success",
+                    "message": "Interview analysis completed",
+                    "feedback_path": feedback_path,
+                    "full_feedback": feedback,
+                    "feedback_preview": feedback[:500] + "..." if len(feedback) > 500 else feedback,
+                    "links_analyzed": len(resume_data.get('links', []))
+                })
+
+            # Mark fallback needed
+            need_fallback = True
+            err_text = feedback
+            print(f"Primary analysis returned error content, rate_limited={rate_limited}: {err_text}")
+        except Exception as primary_err:
+            err_text = str(primary_err)
+            rate_limited = ('rate limit' in err_text.lower()) or ('429' in err_text)
+            need_fallback = True
+            print(f"Primary analysis failed, rate_limited={rate_limited}: {err_text}")
+
+        # Fallback path (shared)
+        if need_fallback:
+            try:
+                # Read answers
+                answers_text = ""
+                if os.path.exists(answers_path):
+                    with open(answers_path, 'r', encoding='utf-8') as f:
+                        answers_text = f.read()
+
+                prompt = f"""
+You are an expert interview coach. Analyze the candidate's interview responses and resume context below and provide helpful, constructive feedback.
+
+Resume Context (truncated):\n{json.dumps(resume_data)[:3000]}
+
+Interview Answers (raw log):\n{answers_text[:8000]}
+
+Return your analysis in clear markdown with these sections:
+- Overall Rating: X/10
+- Strengths: (3-5 bullet points)
+- Areas for Improvement: (3-5 bullet points)
+- Detailed Feedback: (4-6 short paragraphs synthesizing the above)
+"""
+
+                local_feedback = llm.invoke(prompt)
+                # Save fallback feedback
+                ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+                fb_path = os.path.join(GENERATED_DIR, f"feedback_fallback_{ts}.txt")
+                try:
+                    with open(fb_path, 'w', encoding='utf-8') as f:
+                        f.write(local_feedback)
+                except Exception as save_fb_err:
+                    print(f"Failed to save fallback feedback: {save_fb_err}")
+                    fb_path = None
+
+                return jsonify({
+                    "status": "success",
+                    "message": "Fallback analysis generated (OpenAI unavailable)",
+                    "feedback_path": fb_path,
+                    "full_feedback": local_feedback,
+                    "feedback_preview": local_feedback[:500] + "..." if len(local_feedback) > 500 else local_feedback,
+                    "links_analyzed": len(resume_data.get('links', [])),
+                    "fallback": True,
+                    "rate_limited": rate_limited
+                })
+            except Exception as fallback_err:
+                print(f"Fallback analysis failed: {fallback_err}")
+                # Final graceful error response
+                return jsonify({
+                    "status": "error",
+                    "message": f"Failed to analyze interview: {err_text} | Fallback failed: {fallback_err}"
+                }), 429 if rate_limited else 500
         
     except Exception as e:
         print(f"Error analyzing interview: {str(e)}")
@@ -559,13 +656,13 @@ if __name__ == '__main__':
         # Step 2: Generate interview
         interview = generate_interview(resume)
         
-        # Step 3: Save full script
-        script_path = "/Applications/interbuu/web/interview-practice/public/script.txt"
+        # Step 3: Save full script to backend-only dir
+        script_path = os.path.join(GENERATED_DIR, "script.txt")
         save_to_file(interview, script_path)
         
         # Step 4: Extract and save just interviewer questions
         interviewer_lines = extract_interviewer_lines(interview)
-        questions_path = "/Applications/interbuu/web/interview-practice/public/questions.txt"
+        questions_path = os.path.join(GENERATED_DIR, "questions.txt")
         save_to_file(interviewer_lines, questions_path)
         
     except Exception as e:
