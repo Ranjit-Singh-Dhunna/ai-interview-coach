@@ -73,21 +73,29 @@ class OpenAIInterviewSystem:
             "links": list(set(clean_links))  # Remove duplicates
         }
     
-    def generate_interview_questions(self, resume_data: Dict) -> str:
-        """Phase 1: Generate personalized interview questions using OpenAI"""
+    def generate_interview_questions(self, resume_data: Dict, job_description: Optional[str] = None, job_link: Optional[str] = None) -> str:
+        """Phase 1: Generate personalized interview questions using OpenAI.
+        Optionally tailor questions to a provided job description and/or job link.
+        """
         
         resume_text = resume_data.get("text", "")
         resume_links = resume_data.get("links", [])
         
+        job_block = ""
+        if job_description and job_description.strip():
+            job_block += f"\nTARGET JOB DESCRIPTION:\n{job_description.strip()}\n"
+        if job_link and job_link.strip():
+            job_block += f"\nTARGET JOB LINK:\n{job_link.strip()}\n"
+
         prompt = f"""
-        Based on the following resume, generate a comprehensive interview script with 6-8 personalized questions.
+        Based on the following resume{ ' and target job' if job_block else '' }, generate a comprehensive interview script with 6-8 personalized questions.
         
         RESUME TEXT:
         {resume_text}
         
         RESUME LINKS:
         {', '.join(resume_links) if resume_links else 'No links found'}
-        
+        {job_block}
         INSTRUCTIONS:
         1. Start with a warm greeting using the candidate's name from the resume
         2. Create 6-8 questions covering:
@@ -97,6 +105,7 @@ class OpenAIInterviewSystem:
            - Team collaboration
            - Career goals and aspirations
            - Questions about their portfolio/GitHub if links are available
+           - If a target job is provided, tailor questions to the stated responsibilities and required skills
         
         3. Format EXACTLY like this:
         Interviewer: "Question here"
@@ -219,6 +228,9 @@ class OpenAIInterviewSystem:
         INTERVIEW ANSWERS:
         {answers_content}
         
+        RESUME LINKS (RAW):
+        {json.dumps(links, indent=2) if links else 'No links provided'}
+        
         RESUME LINKS ANALYSIS:
         {json.dumps(link_analysis, indent=2) if link_analysis else 'No links to analyze'}
         
@@ -316,15 +328,15 @@ class OpenAIInterviewSystem:
             return ""
 
 # Main execution functions
-def generate_new_questions(resume_pdf_path: str) -> str:
-    """Phase 1: Generate new interview questions"""
+def generate_new_questions(resume_pdf_path: str, job_description: Optional[str] = None, job_link: Optional[str] = None) -> str:
+    """Phase 1: Generate new interview questions. Optionally include a job description/link."""
     system = OpenAIInterviewSystem()
     
     print("📄 Extracting resume data and links...")
     resume_data = system.extract_resume_data_and_links(resume_pdf_path)
     
     print("🤖 Generating personalized interview questions with OpenAI...")
-    questions = system.generate_interview_questions(resume_data)
+    questions = system.generate_interview_questions(resume_data, job_description=job_description, job_link=job_link)
     
     return questions, resume_data
 

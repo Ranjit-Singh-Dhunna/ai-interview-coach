@@ -26,6 +26,9 @@ function App() {
   const [sampleAnswer, setSampleAnswer] = useState('');
   const [isLoadingSampleAnswer, setIsLoadingSampleAnswer] = useState(false);
   const [sampleAnswerCache, setSampleAnswerCache] = useState({});
+  const [jobDescription, setJobDescription] = useState('');
+  const [jobLink, setJobLink] = useState('');
+  const [resumePath, setResumePath] = useState(null);
   
   const synthRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -221,6 +224,8 @@ function App() {
   const startRecording = async () => {
     try {
       setSaveError(null);
+      // Ensure any previous playback URL is cleared to prevent listening back
+      setAudioURL('');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
@@ -231,8 +236,9 @@ function App() {
 
       mediaRecorderRef.current.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        setAudioURL(audioUrl);
+        // Do not create or expose a playback URL; the user should not listen back
+        // const audioUrl = URL.createObjectURL(audioBlob);
+        // setAudioURL(audioUrl);
         
         try {
           await saveResponse(audioBlob);
@@ -290,50 +296,64 @@ function App() {
             timestamp: new Date().toISOString()
           };
           
-          console.log("[saveResponse] Sending to backend...");
-          const response = await fetch('http://localhost:5008/save-answer', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-          });
-  
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("[saveResponse] Server error:", response.status, errorText);
-            throw new Error(`Server error: ${response.status} - ${errorText}`);
-          }
-          
-          const result = await response.json();
-          console.log("[saveResponse] Save successful:", result);
-          
-          setUserTranscript('');
-          console.log("[saveResponse] Cleared user transcript");
-          
-          // Automatically advance to next question after successful save
-          setTimeout(() => {
-            if (currentIndex < script.length - 1) {
+          const isFinal = currentIndex >= (script.length - 1);
+          if (!isFinal) {
+            // Fire-and-forget for non-final questions
+            console.log("[saveResponse] Sending to backend (fire-and-forget)...");
+            fetch('http://localhost:5008/save-answer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            })
+            .then(async (resp) => {
+              if (!resp.ok) {
+                const errorText = await resp.text();
+                console.warn("[saveResponse] Server error:", resp.status, errorText);
+              } else {
+                const result = await resp.json();
+                console.log("[saveResponse] Save successful:", result);
+              }
+            })
+            .catch(err => console.warn('[saveResponse] Network/save failed:', err));
+            
+            // Clear transcript and advance immediately without waiting for backend
+            setUserTranscript('');
+            console.log("[saveResponse] Cleared user transcript");
+            
+            setTimeout(() => {
               const nextIndex = currentIndex + 1;
               setCurrentIndex(nextIndex);
               setShowAnswer(false);
               console.log("[saveResponse] Auto-advanced to next question:", nextIndex);
-              // Auto-speak the next question
-              setTimeout(() => {
-                speakQuestion(script[nextIndex].question);
-              }, 200);
-            } else {
-              console.log("[saveResponse] Interview completed - all questions answered");
-              setCurrentIndex(script.length); // Set beyond script length to show restart button
-              
-              // Automatically start feedback analysis
-              setTimeout(() => {
-                analyzeInterview();
-              }, 1000); // Small delay to ensure UI updates
+              setTimeout(() => speakQuestion(script[nextIndex].question), 200);
+            }, 300);
+            
+            resolve({ ok: true });
+          } else {
+            // FINAL question: await save before triggering analysis
+            console.log("[saveResponse] Final question: awaiting save before analysis...");
+            const resp = await fetch('http://localhost:5008/save-answer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            if (!resp.ok) {
+              const errorText = await resp.text();
+              console.error("[saveResponse] Final save failed:", resp.status, errorText);
+              throw new Error(`Server error: ${resp.status} - ${errorText}`);
             }
-          }, 500); // Small delay to show completion feedback
-          
-          resolve(result);
+            const result = await resp.json();
+            console.log("[saveResponse] Final save successful:", result);
+            
+            setUserTranscript('');
+            console.log("[saveResponse] Cleared user transcript");
+            
+            // Mark interview complete and then analyze
+            setCurrentIndex(script.length);
+            console.log("[saveResponse] Interview completed - all questions answered");
+            setTimeout(() => analyzeInterview(), 1000);
+            resolve({ ok: true, final: true });
+          }
         } catch (error) {
           console.error("[saveResponse] Error saving response:", error);
           setSaveError(`Failed to save response: ${error.message}`);
@@ -355,14 +375,25 @@ function App() {
   };
 
   
-  const startInterview = () => {
+  const startInterview = async () => {
     console.log("Starting interview...");
-    
+    // Always (re)generate questions on start as requested
+    await generateNewQuestions(resumePath);
+    // After questions refresh, start at Q1
     if (currentIndex === -1 && script.length > 0) {
       setCurrentIndex(0);
       setShowAnswer(false);
       speakQuestion(script[0].question);
       console.log("Started interview with first question");
+    } else {
+      // In case script reload is slightly delayed, try a short retry
+      setTimeout(() => {
+        if (script.length > 0 && currentIndex === -1) {
+          setCurrentIndex(0);
+          setShowAnswer(false);
+          speakQuestion(script[0].question);
+        }
+      }, 600);
     }
   };
 
@@ -478,9 +509,7 @@ function App() {
       
       setResumeFile(file);
       setResumeUploaded(true);
-      
-      // Automatically generate questions after upload
-      await generateNewQuestions(result.resume_path);
+      setResumePath(result.resume_path);
       
     } catch (error) {
       console.error('Error uploading resume:', error);
@@ -497,12 +526,20 @@ function App() {
     try {
       console.log('Generating new questions with OpenAI...');
       
+      const payload = { resume_path: resumePath };
+      if (jobDescription && jobDescription.trim()) {
+        payload.job_description = jobDescription.trim();
+      }
+      if (jobLink && jobLink.trim()) {
+        payload.job_link = jobLink.trim();
+      }
+
       const response = await fetch('http://localhost:5008/generate-questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ resume_path: resumePath }),
+        body: JSON.stringify(payload),
       });
       
       if (!response.ok) {
@@ -541,7 +578,7 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          resume_path: resumeFile ? `/Applications/interbuu/uploads/${resumeFile.name}` : null
+          resume_path: resumePath || (resumeFile ? `/Applications/interbuu/uploads/${resumeFile.name}` : null)
         }),
       });
       
@@ -584,6 +621,8 @@ function App() {
     return <div className="status error">Error: {error}</div>;
   }
 
+
+  
   return (
     <div className="interview-container">
       <h1>Interview Practice</h1>
@@ -635,20 +674,10 @@ function App() {
               >
                 {isSaving ? 'Saving...' : 'Stop Recording'}
               </button>
-              {userTranscript && (
-                <div className="transcript-preview">
-                  <strong>Live Transcript:</strong>
-                  <p>{userTranscript}</p>
-                </div>
-              )}
             </div>
           )}
 
-          {audioURL && !isRecording && (
-            <div className="audio-playback">
-              <audio controls src={audioURL} />
-            </div>
-          )}
+          {/* Audio playback removed per requirements */}
         </>
       ) : currentIndex >= script.length ? (
         <div className="completion-message">
@@ -697,10 +726,7 @@ function App() {
                   </div>
                 )}
                 
-                <div className="feedback-details">
-                  <p><strong>🔗 Links Analyzed:</strong> {analysisResult.linksAnalyzed}</p>
-                  <p><strong>📁 Feedback File:</strong> {analysisResult.feedbackPath}</p>
-                </div>
+                {/* Removed file/link summary per request */}
                 
                 <div className="feedback-content">
                   <div className="feedback-header">
@@ -819,6 +845,28 @@ function App() {
                   )}
                 </label>
               </div>
+
+              <div className="job-context-section">
+                <h3>🧭 Optional: Target Job Context</h3>
+                <p>Paste a job description or provide a link to tailor questions for a specific role. Leave blank to skip.</p>
+                <textarea
+                  placeholder="Paste job description (optional)"
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  rows={6}
+                  style={{ width: '100%', marginTop: '8px' }}
+                />
+                <input
+                  type="url"
+                  placeholder="Job posting link (optional)"
+                  value={jobLink}
+                  onChange={(e) => setJobLink(e.target.value)}
+                  style={{ width: '100%', marginTop: '8px' }}
+                />
+                <div style={{ fontSize: '0.9em', color: '#666', marginTop: '6px' }}>
+                  We only send this if you fill it in.
+                </div>
+              </div>
               
               <div className="or-divider">
                 <span>OR</span>
@@ -833,10 +881,29 @@ function App() {
               <div className="resume-uploaded">
                 ✅ Resume uploaded: {resumeFile?.name}
               </div>
+
+              <div className="job-context-section" style={{ width: '100%', marginTop: '12px' }}>
+                <h3>🧭 Optional: Target Job Context</h3>
+                <p>Paste a job description or provide a link. If left empty, nothing will be sent.</p>
+                <textarea
+                  placeholder="Paste job description (optional)"
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  rows={5}
+                  style={{ width: '100%', marginTop: '8px' }}
+                />
+                <input
+                  type="url"
+                  placeholder="Job posting link (optional)"
+                  value={jobLink}
+                  onChange={(e) => setJobLink(e.target.value)}
+                  style={{ width: '100%', marginTop: '8px' }}
+                />
+              </div>
               
               <button 
-                className="generate-questions-btn"
-                onClick={() => generateNewQuestions()}
+                className="start-btn" 
+                onClick={startInterview}
                 disabled={isGeneratingQuestions}
               >
                 {isGeneratingQuestions ? (
@@ -845,14 +912,8 @@ function App() {
                     Generating Questions...
                   </>
                 ) : (
-                  <>
-                    🔄 Regenerate Questions
-                  </>
+                  <>🎤 Start Interview</>
                 )}
-              </button>
-              
-              <button className="start-btn" onClick={startInterview}>
-                🎤 Start Interview
               </button>
             </div>
           )}

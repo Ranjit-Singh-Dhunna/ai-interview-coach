@@ -357,11 +357,17 @@ def generate_questions_endpoint():
     try:
         data = request.get_json()
         resume_path = data.get('resume_path', '/Applications/interbuu/Dhunna_R_40294791_CV_pdf.pdf')
+        job_description = data.get('job_description') or None
+        job_link = data.get('job_link') or None
         
         print(f"Generating questions for resume: {resume_path}")
+        if job_description:
+            print(f"Using provided job description (len={len(job_description)} chars)")
+        if job_link:
+            print(f"Using provided job link: {job_link}")
         
         # Generate questions using OpenAI
-        questions, resume_data = generate_new_questions(resume_path)
+        questions, resume_data = generate_new_questions(resume_path, job_description=job_description, job_link=job_link)
         
         # Save the generated script to backend-only directory
         script_path = os.path.join(GENERATED_DIR, "script.txt")
@@ -378,7 +384,8 @@ def generate_questions_endpoint():
             "status": "success",
             "message": "New interview questions generated successfully",
             "questions_count": len(interviewer_lines.split('\n')),
-            "resume_links": resume_data.get('links', [])
+            "resume_links": resume_data.get('links', []),
+            "job_context_used": bool((job_description and job_description.strip()) or (job_link and str(job_link).strip()))
         })
         
     except Exception as e:
