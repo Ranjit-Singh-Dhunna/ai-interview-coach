@@ -648,6 +648,18 @@ function App() {
     }
   };
   
+  // Delete user artifacts (audio/transcripts) from backend for privacy
+  async function cleanupUserData() {
+    try {
+      await fetch('http://localhost:5008/cleanup-user-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (e) {
+      console.error('Failed to cleanup user data:', e);
+    }
+  }
+  
   const analyzeInterview = async () => {
     setIsAnalyzing(true);
     setSaveError(null);
@@ -694,7 +706,7 @@ function App() {
     }
   };
 
-
+  const inInterview = currentIndex >= 0 && currentIndex < script.length;
 
   if (loading) {
     return <div className="status loading">Loading interview script...</div>;
@@ -707,8 +719,8 @@ function App() {
 
   
   return (
-    <div className="interview-container">
-      <h1>Interview Practice</h1>
+    <div className={`interview-container${inInterview ? ' two-col' : ''}`}>
+      {!inInterview }
       
       {saveError && (
         <div className="error-message">
@@ -717,67 +729,117 @@ function App() {
         </div>
       )}
       
-      {currentIndex >= 0 && currentIndex < script.length ? (
+      {inInterview ? (
         <>
-          <div className="interviewer">
-            <strong>Interviewer:</strong> {script[currentIndex].question}
-            <button 
-              className="speak-button"
-              onClick={() => isSpeaking ? stopSpeaking() : speakQuestion(script[currentIndex].question)}
-              disabled={!voice}
-            >
-              {isSpeaking ? '⏹ Stop' : '▶ Speak'}
-            </button>
-          </div>
-          {showAnswer && (
-            <div className="answer">
-              <strong>Sample Recommended Answer:</strong>
-              {isLoadingSampleAnswer ? (
-                <div className="loading-sample">
-                  <span>Generating personalized sample answer...</span>
-                </div>
-              ) : (
-                <div className="sample-answer-content">
-                  {sampleAnswer || script[currentIndex].answer}
-                </div>
-              )}
+          <div className="left-pane">
+            <div className="left-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <h1 style={{ marginTop: 0, marginBottom: 8 }}>Interview Practice</h1>
             </div>
-          )}
-
-          {/* Live camera preview for confidence only; video is not recorded */}
-          <div className="camera-preview" style={{ marginTop: '12px' }}>
+            {/* Live camera preview for confidence only; video is not recorded */}
             <video
               ref={videoRef}
+              className="big-video"
               autoPlay
               muted
               playsInline
-              style={{ width: '240px', height: '170px', borderRadius: '10px', background: '#000' }}
             />
-            <div style={{ fontSize: '0.85em', color: '#666', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.9em', color: 'var(--text-muted, #666)', marginTop: '6px' }}>
               Live preview only (not recorded)
             </div>
             {videoError && (
               <div className="error-message" style={{ marginTop: '6px' }}>{videoError}</div>
             )}
-          </div>
 
-          {isRecording && (
-            <div className="recording-section">
-              <div className="recording-indicator">
-                <div className="pulse"></div>
-                <span>Recording your response...</span>
+            {isRecording && (
+              <div className="recording-section">
+                <div className="recording-indicator">
+                  <div className="pulse"></div>
+                  <span>Recording your response...</span>
+                </div>
+                <button 
+                  className="stop-recording-button"
+                  onClick={stopRecording}
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Saving...' : 'Stop Recording'}
+                </button>
               </div>
+            )}
+
+            {/* Voice controls inside left pane during interview */}
+            <div className="voice-controls">
+              <label htmlFor="volume">Voice Volume:</label>
+              <input
+                type="range"
+                id="volume"
+                min="0.5"
+                max="1.5"
+                step="0.1"
+                value={volume}
+                onChange={handleVolumeChange}
+              />
+              <span>{volume.toFixed(1)}</span>
+            </div>
+
+            {/* Progress inside left pane */}
+            {script.length > 0 && !isUploadingResume && inInterview && (
+              <div className="progress">
+                <div>
+                  {`Question ${currentIndex + 1} of ${script.length}`}
+                </div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill"
+                    style={{ 
+                      width: `${((currentIndex + 1) / script.length) * 100}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="right-pane">
+            <div className="interviewer">
+              <strong>Interviewer:</strong> {script[currentIndex].question}
+            </div>
+
+            {/* Speak control above suggested answer button */}
+            <div className="buttons" style={{ marginTop: '8px' }}>
               <button 
-                className="stop-recording-button"
-                onClick={stopRecording}
-                disabled={isSaving}
+                className="speak-button"
+                onClick={() => isSpeaking ? stopSpeaking() : speakQuestion(script[currentIndex].question)}
+                disabled={!voice}
               >
-                {isSaving ? 'Saving...' : 'Stop Recording'}
+                {isSpeaking ? '⏹ Stop' : '▶ Speak'}
               </button>
             </div>
-          )}
+            {showAnswer && (
+              <div className="answer">
+                <strong>Sample Recommended Answer:</strong>
+                {isLoadingSampleAnswer ? (
+                  <div className="loading-sample">
+                    <span>Generating personalized sample answer...</span>
+                  </div>
+                ) : (
+                  <div className="sample-answer-content">
+                    {sampleAnswer || script[currentIndex].answer}
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Audio playback removed per requirements */}
+            {/* Recommend button inside right pane */}
+            <div className="buttons" style={{ marginTop: '8px' }}>
+              <button 
+                id="recommend" 
+                onClick={handleRecommend}
+              >
+                {showAnswer ? 'Hide Suggested Answer' : 'Show Suggested Answer'}
+              </button>
+            </div>
+
+            {/* Audio playback removed per requirements */}
+          </div>
         </>
       ) : currentIndex >= script.length ? (
         <div className="completion-message">
@@ -985,28 +1047,32 @@ function App() {
         </div>
       )}
       
-      <div className="voice-controls">
-        <label htmlFor="volume">Voice Volume:</label>
-        <input
-          type="range"
-          id="volume"
-          min="0.5"
-          max="1.5"
-          step="0.1"
-          value={volume}
-          onChange={handleVolumeChange}
-        />
-        <span>{volume.toFixed(1)}</span>
-      </div>
+      {!inInterview && (
+        <div className="voice-controls">
+          <label htmlFor="volume">Voice Volume:</label>
+          <input
+            type="range"
+            id="volume"
+            min="0.5"
+            max="1.5"
+            step="0.1"
+            value={volume}
+            onChange={handleVolumeChange}
+          />
+          <span>{volume.toFixed(1)}</span>
+        </div>
+      )}
 
       <div className="buttons">
         {currentIndex === -1 && (
           <button 
-            id="start" 
+            id="start"
+            className="codepen-button"
             onClick={handleProceed}
             disabled={isGeneratingQuestions || startClicked || script.length === 0}
+            aria-label="Start Interview"
           >
-            Start Interview
+            <span>Start Interview</span>
           </button>
         )}
         {currentIndex >= script.length && !isRecording && !isSaving && (
@@ -1022,17 +1088,10 @@ function App() {
             Restart Interview
           </button>
         )}
-        {currentIndex >= 0 && currentIndex < script.length && (
-          <button 
-            id="recommend" 
-            onClick={handleRecommend}
-          >
-            {showAnswer ? 'Hide Suggested Answer' : 'Show Suggested Answer'}
-          </button>
-        )}
+        {/* Recommend button is shown inside right pane during interview */}
       </div>
 
-      {script.length > 0 && !isUploadingResume && currentIndex >= 0 && (
+      {script.length > 0 && !isUploadingResume && !inInterview && currentIndex >= 0 && (
         <div className="progress">
           <div>
             {currentIndex >= script.length 

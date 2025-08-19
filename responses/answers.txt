@@ -90,3 +90,73 @@ Timestamp: 2025-08-15T23:16:38.249Z
 Question: "I noticed that you have developed a web-based system called DRIP GENIUS, which utilizes Roboflow object detection and Gemini AI recommendation logic. Can you walk us through the technical challenges you faced during this project and how you overcame them?"
 Transcript: Yah baby, what's up, bro?
 
+---
+Timestamp: 2025-08-19T02:56:17.835Z
+Question: "Hi Ranjit, it's great to meet you! I see you have a diverse background in software engineering and a strong set of skills. Let's dive into your experience."
+Transcript: bro what the fuck is this nigga
+
+---
+Timestamp: 2025-08-19T02:57:29.772Z
+Question: "Hi Ranjit, it's great to meet you! I hope you're doing well today. Let's dive into your impressive background. Can you start by explaining your experience with Python, specifically in the context of your DRIP GENIUS project? What challenges did you face while implementing the Flask-based backend?"
+Transcript: Hi, it's good to be here. Thanks for having me in my DripGenius project. I use Python and Flash for making Robo spec and let's see this into it with front end. One challenge I faced was optimizing API response time, which were initially around 200 milliseconds I implemented cache strategy with Heredies. I managed to reduce that to under 50 milliseconds, significantly increasing user's experience and ultimately increasing user's engagement by 30%.
+
+---
+Timestamp: 2025-08-19T02:57:49.674Z
+Question: "In your project Click2Bill, you mentioned using Google Apps Script for automation. Can you elaborate on how you approached designing the backend logic for generating unique invoice numbers and sending emails? What specific considerations did you take into account to ensure a seamless workflow?"
+Transcript: Thank you. This is version two.
+
+---
+Timestamp: 2025-08-19T02:58:06.812Z
+Question: "I noticed you utilized K-means clustering for color analysis in DRIP GENIUS. Could you explain how you implemented this algorithm and its significance in your recommendation system? What insights did you gain from the data?"
+Transcript: Thank you, this is question 3.
+
+---
+Timestamp: 2025-08-19T02:58:25.987Z
+Question: "Your participation in hackathons like @hack and ConUHacks IX is impressive. How did these experiences shape your approach to teamwork and collaboration under pressure? Can you share a specific moment from one of these events where you had to adapt quickly?"
+Transcript: Thank you, this is question four.
+
+---
+Timestamp: 2025-08-19T02:58:43.533Z
+Question: "You have a strong foundation in both frontend and backend technologies, especially with React and Node.js. How do you ensure that your frontend and backend are well-integrated? Can you share any best practices you follow during development?"
+Transcript: Thank you, this is question five.
+
+---
+Timestamp: 2025-08-19T02:58:59.846Z
+Question: "I see that you're interested in AI ethics and the fairness of machine learning models. How do you think these principles can be applied in the development of your projects, particularly in Code Buddy? Can you give an example?"
+Transcript: Thank you. This is question 6.
+
+---
+Timestamp: 2025-08-19T02:59:13.629Z
+Question: "Looking ahead, what are your career aspirations in software engineering? Are there specific technologies or areas you want to focus on as you progress in your career?"
+Transcript: Thank you. This is question seven.
+
+---
+Timestamp: 2025-08-19T02:59:25.838Z
+Question: "Lastly, I noticed your GitHub profile. Can you tell me about a particular project you're most proud of and why? What feedback have you received from others about it?"
+Transcript: Thank you. This is question eight.
+
+---
+Timestamp: 2025-08-19T03:50:20.461Z
+Question: "Your project Click2Bill involves automating invoice generation using Google Apps Script. Can you explain how you designed the backend logic to ensure unique invoice numbers and how you handled any potential conflicts?"
+Transcript: [Audio too short or unclear for transcription]
+
+---
+Timestamp: 2025-08-19T03:50:04.163Z
+Question: "Hi Ranjit, it's great to meet you! I see you have a strong background in software engineering and various programming languages. Can you tell me more about your experience with Python, particularly in the context of your DRIP GENIUS project? What challenges did you face while implementing the Flask-based backend?"
+Transcript: Richmond
+
+---
+Timestamp: 2025-08-19T03:54:56.279Z
+Question: "Hello Ranjit, it's great to meet you! I see you have a strong background in software engineering and a variety of technical skills. Can you start by telling me about your experience with Java and how you have utilized it in your projects?"
+Transcript: Oh my god.
+
+---
+Timestamp: 2025-08-19T04:03:33.924Z
+Question: "I noticed in your project 'DRIP GENIUS' that you implemented a recommendation system using K-means clustering and Gemini AI. Can you explain how you approached the design of the visual processing pipeline and any challenges you faced during this project?"
+Transcript: [Audio too short or unclear for transcription]
+
+---
+Timestamp: 2025-08-19T04:07:52.937Z
+Question: "Hello Ranjit, it's great to meet you! I see you have a strong background in software engineering and several impressive projects. Let's dive into your experience."
+Transcript: Thank you for having me. In my previous work at Tech Innovation, I learned to develop a customer relationship management tool using React and Node.js, which increases user engagement by 30%. Within the first three months of launch, I also worked on an optimum database queries resulting in 20% reduction in load time. I'm really passionate about creating efficient software that not only meets users' needs but also drives such growth.
+

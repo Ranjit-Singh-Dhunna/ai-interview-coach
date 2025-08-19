@@ -1,10 +1,70 @@
 .interview-container {
-  max-width: 800px;
+  width: 96%;
   margin: 2rem auto;
   padding: 2rem;
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Fancy gradient-border animated button for Start Interview */
+.codepen-button {
+  display: inline-block;
+  cursor: pointer;
+  color: white;
+  position: relative;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 3px; /* border thickness */
+  isolation: isolate;
+}
+
+.codepen-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 400%;
+  height: 100%;
+  background: linear-gradient(115deg,#4fcf70,#fad648,#a767e5,#12bcfe,#44ce7b);
+  background-size: 25% 100%;
+  animation: button-gradient-slide 0.75s linear infinite;
+  animation-play-state: paused;
+  translate: -5% 0%;
+  transition: translate 0.25s ease-out;
+  z-index: 0;
+}
+
+.codepen-button:hover::before {
+  animation-play-state: running;
+  transition-duration: 0.75s;
+  translate: 0% 0%;
+}
+
+@keyframes button-gradient-slide {
+  to { transform: translateX(-25%); }
+}
+
+.codepen-button > span {
+  position: relative;
+  display: block;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  background: #000;
+  border-radius: 3px;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Light theme inner background contrast */
+:root:not([data-theme='dark']) .codepen-button > span {
+  background: #000;
+}
+
+/* Dark mode inner background */
+@media (prefers-color-scheme: dark) {
+  .codepen-button > span { background: #0f141a; }
 }
 
 .interviewer {
@@ -163,7 +223,7 @@ button:disabled {
 
 
 .interview-container {
-  max-width: 800px;
+  max-width: 90%;
   margin: 2rem auto;
   padding: 2rem;
   background-color: white;
@@ -334,7 +394,7 @@ button:disabled {
 }
 
 .interview-container {
-  max-width: 800px;
+  max-width: 85%;
   margin: 2rem auto;
   padding: 2rem;
   background-color: white;
@@ -1210,4 +1270,163 @@ button.recording {
   display: block;
   margin-bottom: 8px;
   font-size: 1.1em;
+}
+
+/* Let the browser know we support both color schemes for native controls */
+:root { color-scheme: light dark; }
+
+/* Interview phase two-column layout */
+.interview-stage { /* legacy hook if needed elsewhere */
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+/* Apply two-column within the main container during interview */
+.interview-container.two-col {
+      display: flex;
+      align-items: stretch;
+      gap: 24px;
+      max-height: 96%;
+      max-width: 97%;
+      box-sizing: border-box;
+      padding: 24px;
+      flex-wrap: nowrap;
+      margin: 0 auto;
+      margin-top: 1.9%;
+}
+
+.left-pane {
+  flex: 0 1 66%; /* ~2/3 width */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px; /* inner padding for left pane */
+  box-sizing: border-box;
+}
+
+.right-pane {
+  flex: 1 1 34%;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  padding: 12px; /* inner padding for right pane */
+  box-sizing: border-box;
+}
+
+/* Ensure speak button sits below the interviewer in right pane */
+.right-pane .interviewer {
+  padding-right: 0; /* remove space reserved for absolute button */
+}
+
+.right-pane .speak-button {
+  position: relative; /* override any absolute positioning */
+  top: auto;
+  right: auto;
+  margin-top: 4px;
+}
+
+/* Align button rows to the right inside the right pane */
+.right-pane .buttons {
+  justify-content: flex-end;
+}
+
+.big-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.right-pane .interviewer { margin-bottom: 0; }
+
+@media (max-width: 900px) {
+  .interview-stage { flex-direction: column; }
+  .interview-container.two-col { flex-direction: column; }
+  .left-pane, .right-pane { flex: 1 1 auto; min-width: 0; }
+  .interview-container.two-col { padding: 16px; }
+  .left-pane, .right-pane { padding: 10px; }
+}
+
+/* System Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #0b0c10;
+    color: #e6e6e6;
+  }
+
+  .interview-container {
+    background-color: #1b1f24;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .interviewer {
+    color: #e6edf3;
+  }
+
+  .answer {
+    color: #2ecc71;
+    background-color: #111418;
+    border-left-color: #2ecc71;
+  }
+
+  .buttons button,
+  button {
+    color: #ffffff;
+  }
+
+  .progress { color: #9aa4af; }
+  .progress-bar { background-color: #2a2f36; }
+  .progress-fill { background-color: #4aa3ff; }
+
+  .status.loading,
+  .loading {
+    background-color: #2b2a12;
+    color: #f1c40f;
+  }
+
+  .status.error,
+  .error {
+    background-color: #3a1014;
+    color: #ff6b6b;
+  }
+
+  .user-response,
+  .transcript-preview {
+    background-color: #111418;
+    border-color: #2a2f36;
+    color: #e6e6e6;
+  }
+
+  .recording-section {
+    background-color: #111418;
+    border-left-color: #e74c3c;
+  }
+
+  .upload-section {
+    background: linear-gradient(135deg, #0f141a 0%, #1a2430 100%);
+  }
+
+  .or-divider::before { background: #333; }
+  .or-divider span { background: #1b1f24; color: #b0b9c3; }
+
+  .analysis-results {
+    /* keep gradient but ensure readable text */
+    color: #ffffff;
+  }
+
+  .feedback-content { background: rgba(255, 255, 255, 0.06); }
+  .feedback-preview { background: rgba(255, 255, 255, 0.08); }
+
+  /* Dark mode for suggested answer content */
+  .sample-answer-content {
+    background-color: #111827; /* dark background */
+    color: #e5e7eb;            /* light text */
+    border-left: 4px solid #4aa3ff; /* keep accent similar to progress-fill */
+  }
 }
