@@ -34,6 +34,7 @@ function App() {
   const [resumePath, setResumePath] = useState(null);
   const [startClicked, setStartClicked] = useState(false);
   const [videoEnabled, setVideoEnabled] = useState(false);
+  const [isStartingRecording, setIsStartingRecording] = useState(false);
   const [videoError, setVideoError] = useState(null);
   
   const synthRef = useRef(null);
@@ -155,6 +156,7 @@ function App() {
   // Handle recording start/stop based on speech state
   useEffect(() => {
     if (shouldStartRecordingRef.current && !isSpeaking && currentIndex >= 0 && !isRecording) {
+      setIsStartingRecording(true);
       startRecording();
       shouldStartRecordingRef.current = false;
     }
@@ -271,12 +273,14 @@ function App() {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
+      setIsStartingRecording(false);
       if (recognitionRef.current) {
         recognitionRef.current.start();
       }
     } catch (err) {
       console.error('Error starting recording:', err);
       setSaveError('Could not access microphone. Please check permissions.');
+      setIsStartingRecording(false);
     }
   };
 
@@ -790,19 +794,38 @@ function App() {
               <div className="error-message" style={{ marginTop: '6px' }}>{videoError}</div>
             )}
 
-            {isRecording && (
-              <div className="recording-section">
-                <div className="recording-indicator">
-                  <div className="pulse"></div>
-                  <span>Recording your response...</span>
-                </div>
-                <button 
-                  className="stop-recording-button"
-                  onClick={stopRecording}
-                  disabled={isSaving}
-                >
-                  {isSaving ? 'Saving...' : 'Stop Recording'}
-                </button>
+            {inInterview && (
+              <div className={`recording-section ${
+                (isSpeaking && !(isRecording || isStartingRecording)) ? 'speaking' : ''
+              }`}>
+                {(isRecording || isStartingRecording) ? (
+                  <>
+                    <div className="recording-indicator">
+                      <div className="pulse"></div>
+                      <span>Recording your response...</span>
+                    </div>
+                    <button 
+                      className="stop-recording-button"
+                      onClick={stopRecording}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? 'Saving...' : 'Stop Recording'}
+                    </button>
+                  </>
+                ) : isSpeaking ? (
+                  <div className="recording-status-row">
+                    <div className="status-dot speaking"></div>
+                    <div className="status-text">
+                      <div className="status-title">Interviewer is speaking</div>
+                      <div className="status-sub">Your mic is paused. Recording will start after the question.</div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="recording-indicator">
+                    <div className="pulse"></div>
+                    <span>Stand by for the next prompt...</span>
+                  </div>
+                )}
               </div>
             )}
 

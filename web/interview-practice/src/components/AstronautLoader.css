@@ -14,6 +14,11 @@
   /* local bg token for effects */
   --bg-color: transparent;
   border: 1px solid var(--glass-border);
+  /* Lighter top glow + matching bottom glow */
+  background:
+    radial-gradient(1200px 600px at 50% 0%,   rgba(11,18,32,0.40) 0%, rgba(11,18,32,0.20) 55%, rgba(11,18,32,0.08) 80%, transparent 100%),
+    radial-gradient(1200px 600px at 50% 100%, rgba(11,18,32,0.32) 0%, rgba(11,18,32,0.16) 55%, rgba(11,18,32,0.06) 80%, transparent 100%);
+  
 }
 
 /* Top section (60% of screen) */
@@ -31,8 +36,6 @@
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(1200px 600px at 50% 0%, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.28) 55%, rgba(11,18,32,0.12) 80%, transparent 100%);
   z-index: 0;
   pointer-events: none;
 }
@@ -56,8 +59,6 @@
   position: absolute;
   inset: 0;
   /* Match top overlay to keep consistent background */
-  background:
-    radial-gradient(1200px 600px at 50% 0%, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.28) 55%, rgba(11,18,32,0.12) 80%, transparent 100%);
   z-index: 0;
   pointer-events: none;
 }
@@ -75,7 +76,7 @@
   font-size: 2.5em; /* Increased from 1.6em */
   font-weight: 600;
   user-select: none;
-  color: var(--text);
+  color: #00a2ff;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 

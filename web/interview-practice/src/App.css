@@ -1059,6 +1059,44 @@ button:disabled {
     padding: 0.8rem;
   }
 }
+
+.recording-section.speaking {
+  background: rgba(230, 243, 255, 0.7);
+  border-left-color: var(--accent-primary);
+}
+
+.recording-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 10px;
+}
+
+.status-dot.speaking {
+  background: var(--accent-primary);
+  box-shadow: 0 0 0 6px rgba(74, 125, 255, 0.12);
+}
+
+.status-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.status-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
 /* Add these to your existing CSS */
 .user-response-section {
   margin: 20px 0;
@@ -1346,6 +1384,7 @@ button.recording {
 
 .completion-message {
   position: relative;
+  height: 73%;
   text-align: center;
   margin: 2rem 0;
   padding: 2rem;
@@ -1410,6 +1449,7 @@ button.recording {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   border-radius: 15px;
   margin: 20px 0;
+  height: 70%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
@@ -1787,6 +1827,10 @@ button.recording {
       margin-top: 1.9%;
 }
 
+.welcome-screen{
+  height: 85%;
+}
+
 .left-pane {
   flex: 0 1 66%; /* ~2/3 width */
   min-width: 0;
@@ -1845,7 +1889,7 @@ button.recording {
 
 .big-video {
   width: 96%;
-  height: 360px;
+  height: 420px;
   background: #000;
   border-radius: 12px;
   object-fit: cover;
