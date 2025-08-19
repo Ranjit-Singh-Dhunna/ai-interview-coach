@@ -807,10 +807,11 @@ function App() {
             <div className="buttons" style={{ marginTop: '8px' }}>
               <button 
                 className="speak-button"
-                onClick={() => isSpeaking ? stopSpeaking() : speakQuestion(script[currentIndex].question)}
-                disabled={!voice}
+                onClick={() => speakText(script[currentIndex].question)}
+                disabled={isSpeaking || isRecording}
+                hidden
               >
-                {isSpeaking ? '⏹ Stop' : '▶ Speak'}
+                🔊 Speak Question
               </button>
             </div>
             {showAnswer && (
@@ -831,10 +832,45 @@ function App() {
             {/* Recommend button inside right pane */}
             <div className="buttons" style={{ marginTop: '8px' }}>
               <button 
-                id="recommend" 
+                id="recommend"
+                type="button"
+                className="uiverse-suggested-btn"
                 onClick={handleRecommend}
               >
-                {showAnswer ? 'Hide Suggested Answer' : 'Show Suggested Answer'}
+                <span className="fold"></span>
+
+                <div className="points_wrapper" aria-hidden="true">
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                  <i className="point"></i>
+                </div>
+
+                <span className="inner">
+                  <svg
+                    className="icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <polyline
+                      points="13.18 1.37 13.18 9.64 21.45 9.64 10.82 22.63 10.82 14.36 2.55 14.36 13.18 1.37"
+                    ></polyline>
+                  </svg>
+                  {showAnswer ? 'Hide Suggested Answer' : 'Show Suggested Answer'}
+                </span>
               </button>
             </div>
 
@@ -1065,13 +1101,20 @@ function App() {
 
       <div className="buttons">
         {currentIndex === -1 && (
-          <button 
+          <button
             id="start"
-            className="codepen-button"
+            className="button start-interview-btn"
             onClick={handleProceed}
             disabled={isGeneratingQuestions || startClicked || script.length === 0}
             aria-label="Start Interview"
           >
+            <div className="bubble-layer bubble-1" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-2" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-3" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-4" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-5" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-6" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-7" aria-hidden="true"></div>
             <span>Start Interview</span>
           </button>
         )}

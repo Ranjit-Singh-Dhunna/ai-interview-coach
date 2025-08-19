@@ -160,3 +160,18 @@ Timestamp: 2025-08-19T04:07:52.937Z
 Question: "Hello Ranjit, it's great to meet you! I see you have a strong background in software engineering and several impressive projects. Let's dive into your experience."
 Transcript: Thank you for having me. In my previous work at Tech Innovation, I learned to develop a customer relationship management tool using React and Node.js, which increases user engagement by 30%. Within the first three months of launch, I also worked on an optimum database queries resulting in 20% reduction in load time. I'm really passionate about creating efficient software that not only meets users' needs but also drives such growth.
 
+---
+Timestamp: 2025-08-19T04:55:25.485Z
+Question: "Hi Ranjit, it's great to meet you! Let's dive into your impressive background. Can you explain how you utilized K-means clustering in your DRIP GENIUS project and what challenges you faced during its implementation?"
+Transcript: [Audio too short or unclear for transcription]
+
+---
+Timestamp: 2025-08-19T04:58:24.629Z
+Question: "Hi Ranjit, it's great to meet you! I hope you're doing well today. Let's dive into your experience and skills."
+Transcript: Hi.
+
+---
+Timestamp: 2025-08-19T04:58:42.296Z
+Question: "I see you have experience with multiple programming languages, including Python, Java, and JavaScript. Can you discuss which language you prefer for web development and why?"
+Transcript: Hi.
+

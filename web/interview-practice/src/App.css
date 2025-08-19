@@ -7,6 +7,346 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* From Uiverse.io by mdanarul_9390 — slimy-swan-21 (scoped) */
+.start-interview-btn {
+  position: relative;
+  padding: 14px 42px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  background: transparent;
+  display: inline-block;
+  z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.start-interview-btn span {
+  position: relative;
+  z-index: 15;
+}
+
+.start-interview-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.start-interview-btn::before {
+  content: "";
+  background: rgb(0 0 0);
+  border-radius: inherit;
+  height: calc(100% - 4px);
+  width: calc(100% - 4px);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 12;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.5s ease;
+}
+
+.start-interview-btn:hover:not(:disabled)::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.start-interview-btn .bubble-layer {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  filter: blur(10px);
+  z-index: 0;
+}
+
+.start-interview-btn .bubble-1 {
+  background: #ff007f;
+  top: -20%;
+  left: -10%;
+  animation: moveUpRight 6s ease-in-out infinite;
+}
+.start-interview-btn .bubble-2 {
+  background: #ff6a00;
+  top: 0%;
+  left: 10%;
+  animation: moveDownLeft 5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+.start-interview-btn .bubble-3 {
+  background: #ffcc00;
+  top: 20%;
+  left: 50%;
+  animation: moveRight 4s ease-in-out infinite;
+  animation-delay: 2s;
+}
+.start-interview-btn .bubble-4 {
+  background: #00fff0;
+  top: -20%;
+  left: 70%;
+  animation: moveUpLeft 7s ease-in-out infinite;
+  animation-delay: 3s;
+}
+.start-interview-btn .bubble-5 {
+  background: #9d00ff;
+  top: 30%;
+  left: -10%;
+  animation: moveDownRight 3s ease-in-out infinite;
+  animation-delay: 4s;
+}
+.start-interview-btn .bubble-6 {
+  background: #ff007f;
+  top: -10%;
+  left: 30%;
+  animation: moveLeft 8s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+.start-interview-btn .bubble-7 {
+  background: #ff6a00;
+  top: 40%;
+  left: 60%;
+  animation: moveUp 6s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+@keyframes moveUpRight {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(100%, -100%); }
+  50% { transform: translate(-50%, 50%); }
+  75% { transform: translate(50%, -50%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes moveDownLeft {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-100%, 100%); }
+  50% { transform: translate(50%, -50%); }
+  75% { transform: translate(-50%, 50%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes moveRight {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(100%, 0); }
+  50% { transform: translate(-100%, 50%); }
+  75% { transform: translate(50%, -50%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes moveUpLeft {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-100%, -100%); }
+  50% { transform: translate(50%, 50%); }
+  75% { transform: translate(-50%, -50%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes moveDownRight {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(100%, 100%); }
+  50% { transform: translate(-50%, -50%); }
+  75% { transform: translate(50%, 50%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes moveLeft {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-100%, 0); }
+  50% { transform: translate(100%, -50%); }
+  75% { transform: translate(-50%, 50%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes moveUp {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(0, -100%); }
+  50% { transform: translate(50%, 50%); }
+  75% { transform: translate(-50%, -50%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Ensure global disabled style doesn't gray out this button */
+.start-interview-btn:disabled {
+  background-color: transparent !important;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.start-interview-btn:disabled .bubble-layer { animation-play-state: paused; filter: blur(8px); }
+
+/* From Uiverse.io by ilkhoeri — Suggested Answer button (scoped) */
+#recommend.uiverse-suggested-btn {
+  --h-button: 48px;
+  --w-button: 102px;
+  --round: 0.75rem;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  background: radial-gradient(
+      65.28% 65.28% at 50% 100%,
+      rgba(223, 113, 255, 0.8) 0%,
+      rgba(223, 113, 255, 0) 100%
+    ),
+    linear-gradient(0deg, #7a5af8, #7a5af8);
+  border-radius: var(--round);
+  border: none;
+  outline: none;
+  padding: 12px 18px;
+  color: #fff;
+}
+
+#recommend.uiverse-suggested-btn::before,
+#recommend.uiverse-suggested-btn::after {
+  content: "";
+  position: absolute;
+  inset: var(--space);
+  transition: all 0.5s ease-in-out;
+  border-radius: calc(var(--round) - var(--space));
+  z-index: 0;
+}
+#recommend.uiverse-suggested-btn::before {
+  --space: 1px;
+  background: linear-gradient(
+    177.95deg,
+    rgba(255, 255, 255, 0.19) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+#recommend.uiverse-suggested-btn::after {
+  --space: 2px;
+  background: radial-gradient(
+      65.28% 65.28% at 50% 100%,
+      rgba(223, 113, 255, 0.8) 0%,
+      rgba(223, 113, 255, 0) 100%
+    ),
+    linear-gradient(0deg, #7a5af8, #7a5af8);
+}
+
+#recommend.uiverse-suggested-btn:active:not(:disabled) { transform: scale(0.95); }
+
+#recommend.uiverse-suggested-btn .fold {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 1rem;
+  width: 1rem;
+  display: inline-block;
+  transition: all 0.5s ease-in-out;
+  background: radial-gradient(
+    100% 75% at 55%,
+    rgba(223, 113, 255, 0.8) 0%,
+    rgba(223, 113, 255, 0) 100%
+  );
+  box-shadow: 0 0 3px black;
+  border-bottom-left-radius: 0.5rem;
+  border-top-right-radius: var(--round);
+}
+#recommend.uiverse-suggested-btn .fold::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150%;
+  height: 150%;
+  transform: rotate(45deg) translateX(0%) translateY(-18px);
+  background-color: #e8e8e8;
+  pointer-events: none;
+}
+#recommend.uiverse-suggested-btn:hover:not(:disabled) {
+  background: radial-gradient(
+      65.28% 65.28% at 50% 100%,
+      rgba(223, 113, 255, 0.9) 0%,
+      rgba(223, 113, 255, 0) 100%
+    ),
+    linear-gradient(0deg, #7a5af8, #7a5af8);
+}
+#recommend.uiverse-suggested-btn:hover:not(:disabled) .fold {
+  margin-top: -1rem;
+  margin-right: -1rem;
+}
+
+#recommend.uiverse-suggested-btn .points_wrapper {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+#recommend.uiverse-suggested-btn .points_wrapper .point {
+  bottom: -10px;
+  position: absolute;
+  animation: floating-points infinite ease-in-out;
+  pointer-events: none;
+  width: 2px;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 9999px;
+}
+
+@keyframes floating-points {
+  0% { transform: translateY(0); }
+  85% { opacity: 0; }
+  100% { transform: translateY(-55px); opacity: 0; }
+}
+
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(1)  { left: 10%; opacity: 1;   animation-duration: 2.35s; animation-delay: 0.2s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(2)  { left: 30%; opacity: 0.7; animation-duration: 2.5s;  animation-delay: 0.5s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(3)  { left: 25%; opacity: 0.8; animation-duration: 2.2s;  animation-delay: 0.1s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(4)  { left: 44%; opacity: 0.6; animation-duration: 2.05s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(5)  { left: 50%; opacity: 1;   animation-duration: 1.9s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(6)  { left: 75%; opacity: 0.5; animation-duration: 1.5s;  animation-delay: 1.5s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(7)  { left: 88%; opacity: 0.9; animation-duration: 2.2s;  animation-delay: 0.2s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(8)  { left: 58%; opacity: 0.8; animation-duration: 2.25s; animation-delay: 0.2s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(9)  { left: 98%; opacity: 0.6; animation-duration: 2.6s;  animation-delay: 0.1s; }
+#recommend.uiverse-suggested-btn .points_wrapper .point:nth-child(10) { left: 65%; opacity: 1;   animation-duration: 2.5s;  animation-delay: 0.2s; }
+
+#recommend.uiverse-suggested-btn .inner {
+  z-index: 2;
+  gap: 6px;
+  position: relative;
+  width: 100%;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  transition: color 0.2s ease-in-out;
+}
+
+#recommend.uiverse-suggested-btn .inner svg.icon {
+  width: 18px;
+  height: 18px;
+  transition: fill 0.1s linear;
+}
+
+#recommend.uiverse-suggested-btn:focus svg.icon { fill: white; }
+#recommend.uiverse-suggested-btn:hover:not(:disabled) svg.icon {
+  fill: transparent;
+  animation: dasharray 1s linear forwards, filled 0.1s linear forwards 0.95s;
+}
+@keyframes dasharray {
+  from { stroke-dasharray: 0 0 0 0; }
+  to   { stroke-dasharray: 68 68 0 0; }
+}
+@keyframes filled { to { fill: white; } }
+
+/* Override generic disabled styling for this button */
+#recommend.uiverse-suggested-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  filter: none;
+  background: radial-gradient(
+      65.28% 65.28% at 50% 100%,
+      rgba(223, 113, 255, 0.6) 0%,
+      rgba(223, 113, 255, 0) 100%
+    ),
+    linear-gradient(0deg, #6b4af0, #6b4af0);
+}
+
 /* Fancy gradient-border animated button for Start Interview */
 .codepen-button {
   display: inline-block;
@@ -842,6 +1182,104 @@ button.recording {
   transform: none;
 }
 
+/* Animated Start Interview bubble button (Uiverse-inspired) */
+.start-bubbles-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #6a5af9 0%, #2b90ff 100%);
+  box-shadow: 0 10px 20px rgba(43, 144, 255, 0.25), inset 0 -2px 0 rgba(255,255,255,0.15);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.start-bubbles-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(43, 144, 255, 0.35), inset 0 -2px 0 rgba(255,255,255,0.15);
+}
+
+.start-bubbles-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.start-bubbles-btn:focus-visible {
+  outline: 3px solid rgba(43, 144, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.start-bubbles-btn__text {
+  position: relative;
+  z-index: 2;
+}
+
+.start-bubbles-btn__bubbles {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.start-bubbles-btn__bubble {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.45));
+  filter: blur(0.3px);
+  opacity: 0;
+  animation: start-bubble-rise 3.2s ease-in infinite;
+}
+
+/* Place bubbles with varied delays/positions */
+.start-bubbles-btn__bubble:nth-child(1) { left: 8%;  bottom: -8px;  animation-delay: 0s; }
+.start-bubbles-btn__bubble:nth-child(2) { left: 18%; bottom: -10px; animation-delay: 0.4s; }
+.start-bubbles-btn__bubble:nth-child(3) { left: 28%; bottom: -12px; animation-delay: 0.8s; }
+.start-bubbles-btn__bubble:nth-child(4) { left: 40%; bottom: -9px;  animation-delay: 1.2s; }
+.start-bubbles-btn__bubble:nth-child(5) { left: 52%; bottom: -11px; animation-delay: 1.6s; }
+.start-bubbles-btn__bubble:nth-child(6) { left: 64%; bottom: -10px; animation-delay: 2.0s; }
+.start-bubbles-btn__bubble:nth-child(7) { left: 74%; bottom: -13px; animation-delay: 2.4s; }
+.start-bubbles-btn__bubble:nth-child(8) { left: 82%; bottom: -9px;  animation-delay: 2.8s; }
+.start-bubbles-btn__bubble:nth-child(9) { left: 90%; bottom: -12px; animation-delay: 3.0s; }
+.start-bubbles-btn__bubble:nth-child(10){ left: 5%;  bottom: -10px; animation-delay: 3.2s; }
+
+@keyframes start-bubble-rise {
+  0%   { transform: translateY(12px) scale(0.75); opacity: 0; }
+  20%  { opacity: 0.9; }
+  60%  { transform: translateY(-65%) scale(1.05); opacity: 0.8; }
+  100% { transform: translateY(-130%) scale(1.12); opacity: 0; }
+}
+
+.start-bubbles-btn:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.6) brightness(0.85);
+  opacity: 0.7;
+}
+
+.start-bubbles-btn:disabled .start-bubbles-btn__bubble {
+  animation-play-state: paused;
+  opacity: 0.35;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .start-bubbles-btn,
+  .start-bubbles-btn:hover,
+  .start-bubbles-btn:active {
+    transition: none;
+    transform: none;
+  }
+  .start-bubbles-btn__bubble { animation: none; opacity: 0; }
+}
+
 .analysis-section {
   margin-top: 2rem;
   text-align: center;
@@ -1328,11 +1766,20 @@ button.recording {
   top: auto;
   right: auto;
   margin-top: 4px;
+  z-index: 10; /* keep above decorative layers */
+  pointer-events: auto; /* ensure clicks are received */
+  display: none;
 }
 
 /* Align button rows to the right inside the right pane */
 .right-pane .buttons {
   justify-content: flex-end;
+}
+
+/* Ensure the first buttons row (Speak Question) is above any overlapping decorations */
+.right-pane .interviewer + .buttons {
+  position: relative;
+  z-index: 20;
 }
 
 .big-video {
