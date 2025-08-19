@@ -5,20 +5,23 @@
   left: 2%;
   width: 96%;
   height: 96%;
-  background-color: #0f1624;
+  background-color: transparent;
   z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   border-radius: 16px;
+  /* Provide local bg token for masks */
+  --bg-color: transparent;
+  border: none;
 }
 
 /* Loader Styles */
 .loader2 {
   position: absolute;
   top: 40%;
-  left: 48%;
+  left: 51%;
   margin-left: -78px;
   animation: speeder 0.4s linear infinite;
 }
@@ -26,7 +29,7 @@
 .loader2 > span {
   height: 20%;
   width: 40%;
-  background: #55ff00;
+  background: var(--success);
   position: absolute;
   
   border-radius: 3px 14px 2px 0;
@@ -37,7 +40,7 @@
   width: 0;
   height: 0;
   border-top: 10px solid transparent;
-  border-right: 160px solid #007bff;
+  border-right: 160px solid var(--accent-primary);
   border-bottom: 10px solid transparent;
 }
 
@@ -58,7 +61,7 @@
   width: 0;
   height: 0;
   border-top: 0 solid transparent;
-  border-right: 88px solid #f40000;
+  border-right: 88px solid var(--error);
   border-bottom: 26px solid transparent;
   top: -26px;
   right: -156px;
@@ -68,7 +71,7 @@
   position: absolute;
   height: 20px;
   width: 32px;
-  background: #eeff00;
+  background: var(--warning);
   border-radius: 20px 20px 0 0;
   transform: rotate(-40deg);
   right: -200px;
@@ -79,7 +82,7 @@
   content: "";
   height: 18px;
   width: 18px;
-  background: #b700ff;
+  background: var(--accent-secondary);
   right: 6px;
   top: 11px;
   position: absolute;
@@ -91,7 +94,7 @@
 .loader2 > span > span {
   width: 50px;
   height: 2px;
-  background: #000;
+  background: var(--text);
   position: absolute;
   animation: fazer1 0.2s linear infinite;
 }
@@ -157,7 +160,7 @@
   position: absolute;
   height: 3px;
   width: 30%;
-  background: #000;
+  background: var(--text);
 }
 
 .longfazers span:nth-child(1) {
@@ -222,8 +225,8 @@
 }
 
 .loader3 {
-  color: rgb(230, 230, 230);
-  font-family: "Poppins", sans-serif;
+  color: var(--text);
+  font-family: inherit;
   font-weight: 500;
   font-size: 2rem;
   -webkit-box-sizing: content-box;
@@ -260,7 +263,7 @@
   display: block;
   height: 100%;
   padding-left: 6px;
-  color: #b79aff;
+  color: var(--accent-secondary);
   font-size: 2.2rem;
   font-weight: 600;
   animation: spin_4991 8s infinite;

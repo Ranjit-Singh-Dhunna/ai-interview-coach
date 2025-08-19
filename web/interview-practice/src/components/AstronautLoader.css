@@ -5,12 +5,15 @@
   left: 2%;
   width: 96%;
   height: 96%;
-  background-color: #0f1624;
+  background-color: transparent;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: 16px;
+  /* local bg token for effects */
+  --bg-color: transparent;
+  border: 1px solid var(--glass-border);
 }
 
 /* Top section (60% of screen) */
@@ -23,17 +26,40 @@
   align-items: center;
 }
 
+/* Subtle dark space glow at the top to make stars pop */
+.loader-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1200px 600px at 50% 0%, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.28) 55%, rgba(11,18,32,0.12) 80%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* Bottom section (40% of screen) */
 .loader-bottom {
   height: 40vh;
-  background-color: transparent; /* Make transparent to show stars */
+  background-color: transparent; /* transparent to show stars */
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+
   position: relative;
   overflow: visible; /* Changed to visible to allow stars to flow through */
   margin-top: -1px; /* Remove any potential gap */
+}
+
+/* Add colorful ambient glow in the bottom section */
+.loader-bottom::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Match top overlay to keep consistent background */
+  background:
+    radial-gradient(1200px 600px at 50% 0%, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.28) 55%, rgba(11,18,32,0.12) 80%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* Bottom loader styles */
@@ -45,12 +71,12 @@
   height: 12%;
   width: auto;
   margin: 2rem;
-  font-family: "Poppins", sans-serif;
+  font-family: inherit;
   font-size: 2.5em; /* Increased from 1.6em */
   font-weight: 600;
   user-select: none;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  color: var(--text);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .loader {
@@ -264,7 +290,7 @@
   position: absolute;
   z-index: 11;
   top: 50%;
-  left: 41%; /* Shifted left from 50% */
+  left: 41%;
   transform: translate(-50%, -50%) scale(1.2);
   animation: astronaut 10s linear infinite;
 }

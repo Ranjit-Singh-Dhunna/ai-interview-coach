@@ -12,7 +12,7 @@ function App() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [voice, setVoice] = useState(null);
-  const [volume, setVolume] = useState(1.2);
+  // Removed user-adjustable volume control; use a fixed TTS volume
   const [userTranscript, setUserTranscript] = useState('');
   const [audioURL, setAudioURL] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,6 @@ function App() {
   const [resumeFile, setResumeFile] = useState(null);
   const [isUploadingResume, setIsUploadingResume] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [sampleAnswer, setSampleAnswer] = useState('');
   const [isLoadingSampleAnswer, setIsLoadingSampleAnswer] = useState(false);
@@ -219,7 +218,7 @@ function App() {
       utterance.pitch = 0.9;
     }
     
-    utterance.volume = Math.min(volume, 1.5);
+    utterance.volume = 1.0;
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => {
       setIsSpeaking(false);
@@ -462,6 +461,18 @@ function App() {
     startInterview();
   };
   
+  const handleRestartInterview = () => {
+    // Reset UI to welcome screen with resume retained
+    stopSpeaking();
+    setCopySuccess(false);
+    setShowAnswer(false);
+    setAnalysisResult(null);
+    setStartClicked(false);
+    setShowSpacecraftLoader(false);
+    setCurrentIndex(-1);
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) {}
+  };
+  
 
   const handleRecommend = async () => {
     if (!showAnswer) {
@@ -578,9 +589,7 @@ function App() {
     }
   };
 
-  const handleVolumeChange = (e) => {
-    setVolume(parseFloat(e.target.value));
-  };
+  // Volume controls removed per requirements
 
   const handleResumeUpload = async (event) => {
     const file = event.target.files[0];
@@ -797,20 +806,7 @@ function App() {
               </div>
             )}
 
-            {/* Voice controls inside left pane during interview */}
-            <div className="voice-controls">
-              <label htmlFor="volume">Voice Volume:</label>
-              <input
-                type="range"
-                id="volume"
-                min="0.5"
-                max="1.5"
-                step="0.1"
-                value={volume}
-                onChange={handleVolumeChange}
-              />
-              <span>{volume.toFixed(1)}</span>
-            </div>
+            {/* Voice controls removed */}
 
             {/* Progress inside left pane */}
             {script.length > 0 && !isUploadingResume && inInterview && (
@@ -910,10 +906,9 @@ function App() {
         </>
       ) : currentIndex >= script.length ? (
         <div className="completion-message">
-          <p>🎉 Interview completed successfully!</p>
-          <p>All {script.length} questions have been answered and saved.</p>
-          <p>Check your responses in the answers.txt file.</p>
-          
+          <h2 className="completion-title">🎉 Interview Completed</h2>
+          <p className="completion-subtitle">All {script.length} questions have been answered and saved. Check your responses in <strong>answers.txt</strong>.</p>
+
           <div className="analysis-section">
             {!analysisResult && (
               <div className="analyzing-status">
@@ -925,13 +920,13 @@ function App() {
             {analysisResult && (
               <div className="analysis-result">
                 <h3>📊 Interview Analysis Complete!</h3>
-                
+
                 {analysisResult.rating && (
                   <div className="rating-section">
                     <h4>🎆 Overall Rating: {analysisResult.rating}</h4>
                   </div>
                 )}
-                
+
                 {analysisResult.strengths && analysisResult.strengths.length > 0 && (
                   <div className="strengths-section">
                     <h4>✅ Strengths:</h4>
@@ -942,7 +937,7 @@ function App() {
                     </ul>
                   </div>
                 )}
-                
+
                 {analysisResult.improvements && analysisResult.improvements.length > 0 && (
                   <div className="improvements-section">
                     <h4>📝 Areas for Improvement:</h4>
@@ -953,19 +948,11 @@ function App() {
                     </ul>
                   </div>
                 )}
-                
-                {/* Removed file/link summary per request */}
-                
+
                 <div className="feedback-content">
                   <div className="feedback-header">
                     <h4>📝 Detailed Feedback:</h4>
                     <div className="feedback-actions">
-                      <button 
-                        className="expand-feedback-btn"
-                        onClick={() => setIsExpanded(!isExpanded)}
-                      >
-                        {isExpanded ? '📄 Collapse' : '📋 Expand Full'}
-                      </button>
                       <button 
                         className="copy-feedback-btn"
                         onClick={() => {
@@ -978,7 +965,7 @@ function App() {
                       </button>
                     </div>
                   </div>
-                  <div className={`feedback-text ${isExpanded ? 'expanded' : ''}`}>
+                  <div className={`feedback-text expanded`}>
                     <div className="feedback-full-content">
                       {analysisResult?.feedback?.split('\n\n').map((rawParagraph, index) => {
                         const stripMarkdownBold = (s) => (s || '').replace(/\*\*(.*?)\*\*/g, '$1');
@@ -986,7 +973,6 @@ function App() {
                         const trimmed = paragraph.trim();
                         if (!trimmed) return null;
 
-                        // Headings: allow leading spaces before '#'
                         const headingMatch = trimmed.match(/^#+/);
                         if (headingMatch) {
                           const level = headingMatch[0].length;
@@ -995,7 +981,6 @@ function App() {
                           return React.createElement(HeadingTag, { key: index, className: 'feedback-heading' }, text);
                         }
 
-                        // Bulleted list (allow leading spaces)
                         if (/^[-*]\s+/.test(trimmed)) {
                           const items = paragraph.split('\n').map(i => i.trim()).filter(Boolean);
                           return (
@@ -1008,7 +993,6 @@ function App() {
                           );
                         }
 
-                        // Numbered list
                         if (/^\d+\.\s+/.test(trimmed)) {
                           const items = paragraph.split('\n').map(i => i.trim()).filter(Boolean);
                           return (
@@ -1021,21 +1005,14 @@ function App() {
                           );
                         }
 
-                        // Regular paragraph
                         return <p key={index} className="feedback-paragraph">{stripMarkdownBold(paragraph)}</p>;
                       })}
                     </div>
                   </div>
-                  {!isExpanded && (
-                    <div className="feedback-gradient-overlay">
-                      <button 
-                        className="show-more-btn"
-                        onClick={() => setIsExpanded(true)}
-                      >
-                        📖 Show Full Feedback
-                      </button>
-                    </div>
-                  )}
+                </div>
+
+                <div className="completion-actions">
+                  <button className="button btn-primary" onClick={handleRestartInterview}>Restart Interview</button>
                 </div>
               </div>
             )}
@@ -1114,21 +1091,7 @@ function App() {
         </div>
       )}
       
-      {!inInterview && (
-        <div className="voice-controls">
-          <label htmlFor="volume">Voice Volume:</label>
-          <input
-            type="range"
-            id="volume"
-            min="0.5"
-            max="1.5"
-            step="0.1"
-            value={volume}
-            onChange={handleVolumeChange}
-          />
-          <span>{volume.toFixed(1)}</span>
-        </div>
-      )}
+      {/* Voice controls removed */}
 
       <div className="buttons">
         {currentIndex === -1 && (
@@ -1147,19 +1110,6 @@ function App() {
             <div className="bubble-layer bubble-6" aria-hidden="true"></div>
             <div className="bubble-layer bubble-7" aria-hidden="true"></div>
             <span>Start Interview</span>
-          </button>
-        )}
-        {currentIndex >= script.length && !isRecording && !isSaving && (
-          <button 
-            id="restart" 
-            onClick={() => {
-              setCurrentIndex(-1);
-              setShowAnswer(false);
-              stopSpeaking();
-              setStartClicked(false);
-            }}
-          >
-            Restart Interview
           </button>
         )}
         {/* Recommend button is shown inside right pane during interview */}
