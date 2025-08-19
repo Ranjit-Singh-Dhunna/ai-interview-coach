@@ -26,6 +26,21 @@ An **end-to-end, privacy-conscious interview practice app**. Upload your resume,
 
 ---
 
+
+## 📝 Usage Flow
+1. **Upload resume (PDF)** → saved to `uploads/`  
+2. **Generate questions** → 6–8 tailored questions saved to `generated/`  
+3. **Practice interview**  
+   - TTS reads questions aloud  
+   - User records responses → `.webm` + transcript in `responses/answers.txt`  
+4. **Auto-analysis**  
+   - `POST /analyze-interview` → AI feedback (rating, strengths, improvements)  
+   - UI displays structured results  
+5. **Sample answers (optional)**  
+   - Click "Show Suggested Answer" → STAR-style guidance
+
+---
+
 ## 🏗 Architecture
 **Backend (Flask, port 5008)**  
 - Core logic: `openai_interview_system.py`  
@@ -85,20 +100,6 @@ CORS is preconfigured to allow ports 3000/3001.
 
 ---
 
-## 📝 Usage Flow
-1. **Upload resume (PDF)** → saved to `uploads/`  
-2. **Generate questions** → 6–8 tailored questions saved to `generated/`  
-3. **Practice interview**  
-   - TTS reads questions aloud  
-   - User records responses → `.webm` + transcript in `responses/answers.txt`  
-4. **Auto-analysis**  
-   - `POST /analyze-interview` → AI feedback (rating, strengths, improvements)  
-   - UI displays structured results  
-5. **Sample answers (optional)**  
-   - Click "Show Suggested Answer" → STAR-style guidance  
-
----
-
 ## 🔑 Environment Variables
 - `OPENAI_API_KEY` (**required**)  
 - `OPENAI_MODEL` (optional, default in `openai_interview_system.py`)  
@@ -123,10 +124,3 @@ Created via `setup_openai.py` → saved in `.env`.
 - **Permissions** → ensure write access to `uploads/`, `responses/`, `generated/`  
 - **Slow startup** → Whisper downloads model on first use  
 
----
-
-## ▶️ Scripts
-- Backend: `python resume_questions.py`  
-- Frontend: `cd web/interview-practice && npm start`  
-
----
