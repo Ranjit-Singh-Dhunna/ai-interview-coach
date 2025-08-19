@@ -131,3 +131,18 @@ jspm_packages/
 # Personal files
 *.pdf
 !README.pdf 
+
+# Project-specific ignores
+# Generated artifacts and caches
+generated/
+
+# Example env file should not be tracked
+.env.example
+
+# Editor/backup artifacts
+web/interview-practice/src/App.js.backup
+web/interview-practice/src/App.js.bak
+
+# Interview data outputs
+answers.txt
+questions.txt
