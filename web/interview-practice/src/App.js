@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import AstronautLoader from './components/AstronautLoader';
+import SpaceshipLoader from './components/SpaceshipLoader';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
   const [saveError, setSaveError] = useState(null);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showSpacecraftLoader, setShowSpacecraftLoader] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
   const [isUploadingResume, setIsUploadingResume] = useState(false);
@@ -282,6 +284,10 @@ function App() {
   const stopRecording = async () => {
     if (mediaRecorderRef.current && isRecording) {
       setIsSaving(true);
+      // Show spacecraft loader for final question
+      if (currentIndex === script.length - 1) {
+        setShowSpacecraftLoader(true);
+      }
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       if (recognitionRef.current) {
@@ -674,6 +680,7 @@ function App() {
   const analyzeInterview = async () => {
     setIsAnalyzing(true);
     setSaveError(null);
+    setShowSpacecraftLoader(true);
     
     try {
       console.log('Analyzing interview performance with OpenAI...');
@@ -696,13 +703,14 @@ function App() {
       console.log('Analysis completed:', result);
       
       setAnalysisResult({
-        feedback: result.full_feedback || result.feedback_preview,
+        feedback: result.feedback,
         feedbackPath: result.feedback_path,
         linksAnalyzed: result.links_analyzed,
         rating: result.rating || 'N/A',
         strengths: result.strengths || [],
         improvements: result.improvements || []
       });
+      setShowSpacecraftLoader(false);
       
       // Automatically cleanup user data after providing feedback for privacy
       setTimeout(() => {
@@ -712,6 +720,7 @@ function App() {
     } catch (error) {
       console.error('Error analyzing interview:', error);
       setSaveError(`Failed to analyze interview: ${error.message}`);
+      setShowSpacecraftLoader(false);
     } finally {
       setIsAnalyzing(false);
     }
@@ -729,9 +738,13 @@ function App() {
 
 
   
-  // Show loader if loading
+  // Show loader if loading or analyzing
   if (showLoader) {
     return <AstronautLoader />;
+  }
+  
+  if (showSpacecraftLoader) {
+    return <SpaceshipLoader />;
   }
 
   return (
@@ -967,7 +980,7 @@ function App() {
                   </div>
                   <div className={`feedback-text ${isExpanded ? 'expanded' : ''}`}>
                     <div className="feedback-full-content">
-                      {analysisResult.feedback.split('\n\n').map((rawParagraph, index) => {
+                      {analysisResult?.feedback?.split('\n\n').map((rawParagraph, index) => {
                         const stripMarkdownBold = (s) => (s || '').replace(/\*\*(.*?)\*\*/g, '$1');
                         const paragraph = stripMarkdownBold((rawParagraph ?? '').replace(/\r/g, ''));
                         const trimmed = paragraph.trim();

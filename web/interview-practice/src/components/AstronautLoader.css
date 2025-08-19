@@ -262,7 +262,7 @@
   position: absolute;
   z-index: 11;
   top: 50%;
-  left: 42%; /* Shifted left from 50% */
+  left: 40%; /* Shifted left from 50% */
   transform: translate(-50%, -50%) scale(1.2);
   animation: astronaut 10s linear infinite;
 }
