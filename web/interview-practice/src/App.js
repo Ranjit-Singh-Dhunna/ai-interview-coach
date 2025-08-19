@@ -15,6 +15,7 @@ function App() {
   // Removed user-adjustable volume control; use a fixed TTS volume
   const [userTranscript, setUserTranscript] = useState('');
   const [audioURL, setAudioURL] = useState('');
+  const reuploadInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -1085,7 +1086,7 @@ function App() {
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   rows={6}
-                  style={{ width: '100%', marginTop: '8px' }}
+                  style={{ width: '100%', marginTop: '8px', height: resumeUploaded ? '312px' : undefined }}
                 />
               </div>
               {/* Removed alternate start button and OR divider as requested */}
@@ -1094,6 +1095,24 @@ function App() {
             <div className="welcome-buttons">
               <div className="resume-uploaded">
                 ✅ Resume uploaded: {resumeFile?.name}
+              </div>
+              <div style={{ marginTop: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={() => reuploadInputRef.current && reuploadInputRef.current.click()}
+                  disabled={isUploadingResume || isGeneratingQuestions}
+                  aria-label="Re-upload Resume PDF"
+                >
+                  Re-upload Resume
+                </button>
+                <input
+                  ref={reuploadInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  style={{ display: 'none' }}
+                  onChange={handleResumeUpload}
+                />
               </div>
 
               <div className="job-context-section" style={{ width: '100%', marginTop: '12px' }}>
@@ -1104,7 +1123,7 @@ function App() {
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   rows={5}
-                  style={{ width: '100%', marginTop: '8px' }}
+                  style={{ width: '100%', marginTop: '8px', height: '312px' }}
                 />
               </div>
               
