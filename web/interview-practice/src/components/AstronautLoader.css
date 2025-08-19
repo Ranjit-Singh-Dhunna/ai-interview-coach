@@ -1,14 +1,16 @@
 /* Full screen loader container */
 .fullscreen-loader {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 2%;
+  left: 2%;
+  width: 96%;
+  height: 96%;
   background-color: #0f1624;
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
 }
 
 /* Top section (60% of screen) */
@@ -40,7 +42,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 10%;
+  height: 12%;
   width: auto;
   margin: 2rem;
   font-family: "Poppins", sans-serif;
@@ -262,7 +264,7 @@
   position: absolute;
   z-index: 11;
   top: 50%;
-  left: 40%; /* Shifted left from 50% */
+  left: 41%; /* Shifted left from 50% */
   transform: translate(-50%, -50%) scale(1.2);
   animation: astronaut 10s linear infinite;
 }
