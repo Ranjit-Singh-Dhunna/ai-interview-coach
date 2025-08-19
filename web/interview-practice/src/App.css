@@ -1782,12 +1782,23 @@ button.recording {
   z-index: 20;
 }
 
+/* Video container for better layout control */
+.video-container {
+  width: 100%;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .big-video {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  max-width: 640px;
+  height: 360px;
   background: #000;
   border-radius: 12px;
   object-fit: cover;
+  transform: scaleX(-1); /* Mirror the video for a more natural feel */
 }
 
 .right-pane .interviewer { margin-bottom: 0; }

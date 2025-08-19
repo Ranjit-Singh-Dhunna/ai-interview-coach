@@ -1,0 +1,623 @@
+import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
+import Loader from './components/Loader';
+
+function App() {
+  const [script, setScript] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [voice, setVoice] = useState(null);
+  const [volume, setVolume] = useState(1.2);
+  const [userTranscript, setUserTranscript] = useState('');
+  const [audioURL, setAudioURL] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [resumeUploaded, setResumeUploaded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [sampleAnswer, setSampleAnswer] = useState('');
+  const [isLoadingSampleAnswer, setIsLoadingSampleAnswer] = useState(false);
+  const [sampleAnswerCache, setSampleAnswerCache] = useState({});
+  const [jobDescription, setJobDescription] = useState('');
+  const [resumePath, setResumePath] = useState(null);
+  const [startClicked, setStartClicked] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(false);
+  const [videoError, setVideoError] = useState(null);
+  
+  const synthRef = useRef(null);
+  const utteranceRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recognitionRef = useRef(null);
+  const shouldStartRecordingRef = useRef(false);
+  const videoRef = useRef(null);
+
+  // Load the interview script from backend; fallback to public file if needed
+  const loadScript = async () => {
+    try {
+      const ts = Date.now();
+      // Try backend endpoint first
+      let response = await fetch(`http://localhost:5008/script?ts=${ts}`, { cache: 'no-store' });
+      if (!response.ok) {
+        // Fallback to public file (dev only)
+        response = await fetch(`/script.txt?ts=${ts}`, { cache: 'no-store' });
+      }
+      if (!response.ok) throw new Error('Failed to load script');
+      const text = await response.text();
+      parseScript(text);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Retry loader to refresh questions after regeneration without triggering reloads
+  const loadScriptWithRetry = async (maxAttempts = 5, delayMs = 400) => {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const cacheBuster = Date.now();
+        let resp = await fetch(`http://localhost:5008/script?ts=${cacheBuster}`, { cache: 'no-store' });
+        if (!resp.ok) {
+          // Fallback to public file during dev
+          resp = await fetch(`/script.txt?ts=${cacheBuster}`, { cache: 'no-store' });
+        }
+        if (!resp.ok) throw new Error(`Fetch failed (${resp.status})`);
+        const text = await resp.text();
+        if (text && text.trim().length > 0) {
+          parseScript(text);
+          return true;
+        }
+      } catch (e) {
+        // wait and retry
+        if (attempt < maxAttempts) {
+          await new Promise(r => setTimeout(r, delayMs));
+          continue;
+        } else {
+          console.error('Failed to refresh script after generation:', e);
+          setSaveError('Questions generated, but failed to load the updated script. Please try again.');
+          return false;
+        }
+      }
+    }
+    return false;
+  };
+
+  // Initialize speech synthesis and recognition
+  useEffect(() => {
+    const initSpeech = () => {
+      const synth = window.speechSynthesis;
+      synthRef.current = synth;
+      const voices = synth.getVoices();
+      
+      if (voices.length > 0) {
+        const preferredVoice = voices.find(v => 
+          v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Zira') || v.name.includes('David'))
+        ) || 
+        voices.find(v => 
+          v.lang.includes('en') && v.voiceURI.includes('Google')
+        ) || 
+        voices.find(v => v.lang.includes('en'));
+        
+        setVoice(preferredVoice || voices[0]);
+      }
+    };
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        setUserTranscript(transcript);
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        stopRecording();
+      };
+    }
+
+    loadScript();
+    
+    const synth = window.speechSynthesis;
+    synthRef.current = synth;
+    synth.onvoiceschanged = initSpeech;
+    initSpeech();
+
+    return () => {
+      if (synth) {
+        synth.cancel();
+      }
+      stopRecording();
+      stopVideo();
+    };
+  }, []);
+
+  // Handle recording start/stop based on speech state
+  useEffect(() => {
+    if (shouldStartRecordingRef.current && !isSpeaking && currentIndex >= 0 && !isRecording) {
+      startRecording();
+      shouldStartRecordingRef.current = false;
+    }
+  }, [isSpeaking, currentIndex, isRecording]);
+
+  // Start/stop camera preview based on interview state
+  useEffect(() => {
+    const isInterviewActive = currentIndex >= 0 && currentIndex < script.length;
+    if (isInterviewActive && !videoEnabled) {
+      startVideo();
+    }
+    if (!isInterviewActive && videoEnabled) {
+      stopVideo();
+    }
+  }, [currentIndex, script.length, videoEnabled]);
+
+  const parseScript = (text) => {
+    const lines = text.split('\n');
+    const parsedScript = [];
+    let currentQuestion = null;
+
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return;
+
+      if (trimmedLine.startsWith('Interviewer:')) {
+        if (currentQuestion) parsedScript.push(currentQuestion);
+        currentQuestion = {
+          question: trimmedLine.replace('Interviewer:', '').trim(),
+          answer: ''
+        };
+      } else if (trimmedLine.startsWith('Answer me:')) {
+        if (currentQuestion) {
+          currentQuestion.answer = trimmedLine.replace('Answer me:', '').trim();
+        }
+      } else if (currentQuestion) {
+        currentQuestion.answer += (currentQuestion.answer ? '\n' : '') + trimmedLine;
+      }
+    });
+
+    if (currentQuestion) parsedScript.push(currentQuestion);
+    setScript(parsedScript);
+  };
+
+  const speakQuestion = (text) => {
+    if (!synthRef.current || !voice) return;
+    
+    synthRef.current.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = voice;
+    
+    if (voice.name.includes('Natural') || voice.name.includes('Zira')) {
+      utterance.rate = 0.9;
+      utterance.pitch = 0.95;
+    } else if (voice.voiceURI.includes('Google')) {
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+    } else {
+      utterance.rate = 0.95;
+      utterance.pitch = 0.9;
+    }
+    
+    utterance.volume = Math.min(volume, 1.5);
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      shouldStartRecordingRef.current = true;
+    };
+    utterance.onerror = (e) => {
+      console.error('Speech error:', e);
+      setIsSpeaking(false);
+    };
+    
+    synthRef.current.speak(utterance);
+    utteranceRef.current = utterance;
+  };
+
+  const stopSpeaking = () => {
+    if (synthRef.current) {
+      synthRef.current.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      setSaveError(null);
+      // Ensure any previous playback URL is cleared to prevent listening back
+      setAudioURL('');
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        // Do not create or expose a playback URL; the user should not listen back
+        // const audioUrl = URL.createObjectURL(audioBlob);
+        // setAudioURL(audioUrl);
+        
+        try {
+          await saveResponse(audioBlob);
+        } catch (error) {
+          console.error('Error saving response:', error);
+          setSaveError('Failed to save response. Please try again.');
+        } finally {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+      }
+    } catch (err) {
+      console.error('Error starting recording:', err);
+      setSaveError('Could not access microphone. Please check permissions.');
+    }
+  };
+
+  const stopRecording = async () => {
+    if (mediaRecorderRef.current && isRecording) {
+      setIsSaving(true);
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    }
+  };
+
+  // Camera preview controls (no recording)
+  const startVideo = async () => {
+    try {
+      setVideoError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setVideoEnabled(true);
+    } catch (e) {
+      console.error('Error starting camera preview:', e);
+      setVideoError('Could not access camera. Please check permissions.');
+    }
+  };
+
+  const stopVideo = () => {
+    try {
+      const el = videoRef.current;
+      const stream = el && el.srcObject;
+      if (stream && typeof stream.getTracks === 'function') {
+        stream.getTracks().forEach(t => t.stop());
+      }
+      if (el) el.srcObject = null;
+    } catch (_) {}
+    setVideoEnabled(false);
+  };
+
+  const saveResponse = async (audioBlob) => {
+    console.log("[saveResponse] Starting to save response...");
+    
+    return new Promise((resolve, reject) => {
+      console.log("[saveResponse] Creating FileReader...");
+      const audioReader = new FileReader();
+      
+      audioReader.onloadend = async () => {
+        try {
+          const currentQuestion = script[currentIndex].question;
+          console.log("[saveResponse] Processing question:", currentQuestion);
+          
+          const audioBase64 = audioReader.result.split(',')[1];
+          console.log("[saveResponse] Audio data length:", audioBase64.length, "base64 chars");
+          console.log("[saveResponse] User transcript:", userTranscript);
+          
+          console.log("[saveResponse] Preparing request payload...");
+          const payload = {
+            question: currentQuestion,
+            answer: userTranscript,
+            audio: audioBase64,
+            timestamp: new Date().toISOString()
+          };
+          
+          const isFinal = currentIndex >= (script.length - 1);
+          if (!isFinal) {
+            // Fire-and-forget for non-final questions
+            console.log("[saveResponse] Sending to backend (fire-and-forget)...");
+            fetch('http://localhost:5008/save-answer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            })
+            .then(async (resp) => {
+              if (!resp.ok) {
+                const errorText = await resp.text();
+                console.warn("[saveResponse] Server error:", resp.status, errorText);
+              } else {
+                const result = await resp.json();
+                console.log("[saveResponse] Save successful:", result);
+              }
+            })
+            .catch(err => console.warn('[saveResponse] Network/save failed:', err));
+            
+            // Clear transcript and advance immediately without waiting for backend
+            setUserTranscript('');
+            console.log("[saveResponse] Cleared user transcript");
+            
+            setTimeout(() => {
+              const nextIndex = currentIndex + 1;
+              setCurrentIndex(nextIndex);
+              setShowAnswer(false);
+              console.log("[saveResponse] Auto-advanced to next question:", nextIndex);
+              setTimeout(() => speakQuestion(script[nextIndex].question), 200);
+            }, 300);
+            
+            resolve({ ok: true });
+          } else {
+            // FINAL question: await save before triggering analysis
+            console.log("[saveResponse] Final question: awaiting save before analysis...");
+            const resp = await fetch('http://localhost:5008/save-answer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            if (!resp.ok) {
+              const errorText = await resp.text();
+              console.error("[saveResponse] Final save failed:", resp.status, errorText);
+              throw new Error(`Server error: ${resp.status} - ${errorText}`);
+            }
+            const result = await resp.json();
+            console.log("[saveResponse] Final save successful:", result);
+            
+            setUserTranscript('');
+            console.log("[saveResponse] Cleared user transcript");
+            
+            // Mark interview complete and then analyze
+            setCurrentIndex(script.length);
+            console.log("[saveResponse] Interview completed - all questions answered");
+            setTimeout(() => analyzeInterview(), 1000);
+            resolve({ ok: true, final: true });
+          }
+        } catch (error) {
+          console.error("[saveResponse] Error saving response:", error);
+          setSaveError(`Failed to save response: ${error.message}`);
+          reject(error);
+        } finally {
+          setIsSaving(false);
+          console.log("[saveResponse] Finished save operation");
+        }
+      };
+      
+      audioReader.onerror = (error) => {
+        console.error("[saveResponse] FileReader error:", error);
+        reject(new Error("Failed to read audio data"));
+      };
+      
+      console.log("[saveResponse] Reading audio blob...");
+      audioReader.readAsDataURL(audioBlob);
+    });
+  };
+
+  const startInterview = async () => {
+    console.log("Starting interview...");
+    setShowLoader(true);
+    try {
+      // Always (re)generate questions on start as requested
+      await generateNewQuestions(resumePath);
+      setCurrentIndex(0);
+      setStartClicked(true);
+      setShowAnswer(false);
+      setUserTranscript('');
+      setAudioURL('');
+      setAnalysisResult(null);
+    } catch (error) {
+      console.error("Error starting interview:", error);
+      setError("Failed to start interview. Please try again.");
+    } finally {
+      setShowLoader(false);
+    }
+  };
+
+  // ... (rest of the code remains the same)
+            <h2>📄 Upload Your Resume</h2>
+            <p>Upload your resume PDF to generate personalized interview questions</p>
+            
+            <div className="upload-container">
+              <input
+                type="file"
+                id="resume-upload"
+                accept=".pdf"
+                onChange={handleResumeUpload}
+                disabled={isUploadingResume}
+                style={{ display: 'none' }}
+              />
+              <label 
+                htmlFor="resume-upload" 
+                className={`upload-btn ${isUploadingResume ? 'uploading' : ''}`}
+              >
+                {isUploadingResume ? (
+                  <>
+                    <div className="loading-spinner"></div>
+                    Uploading & Generating Questions...
+                  </>
+                ) : (
+                  <>
+                    📤 Choose Resume PDF
+                  </>
+                )}
+              </label>
+            </div>
+
+            <div className="job-context-section">
+              <h3>🧭 Optional: Target Job Context</h3>
+              <p>Paste a job description to tailor questions for a specific role. Leave blank to skip.</p>
+              <textarea
+                placeholder="Paste job description (optional)"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                rows={6}
+                style={{ width: '100%', marginTop: '8px' }}
+              />
+              <p>Upload your resume PDF to generate personalized interview questions</p>
+              
+              <div className="upload-container">
+                <input
+                  type="file"
+                  id="resume-upload"
+                  accept=".pdf"
+                  onChange={handleResumeUpload}
+                  disabled={isUploadingResume}
+                  style={{ display: 'none' }}
+                />
+                <label 
+                  htmlFor="resume-upload" 
+                  className={`upload-btn ${isUploadingResume ? 'uploading' : ''}`}
+                >
+                  {isUploadingResume ? (
+                    <>
+                      <div className="loading-spinner"></div>
+                      Uploading & Generating Questions...
+                    </>
+                  ) : (
+                    <>
+                      📤 Choose Resume PDF
+                    </>
+                  )}
+                </label>
+              </div>
+
+              <div className="job-context-section">
+                <h3>🧭 Optional: Target Job Context</h3>
+                <p>Paste a job description to tailor questions for a specific role. Leave blank to skip.</p>
+                <textarea
+                  placeholder="Paste job description (optional)"
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  rows={6}
+                  style={{ width: '100%', marginTop: '8px' }}
+                />
+              </div>
+              {/* Removed alternate start button and OR divider as requested */}
+            </div>
+          ) : (
+            <div className="welcome-buttons">
+              <div className="resume-uploaded">
+                ✅ Resume uploaded: {resumeFile?.name}
+              </div>
+
+              <div className="job-context-section" style={{ width: '100%', marginTop: '12px' }}>
+                <h3>🧭 Optional: Target Job Context</h3>
+                <p>Paste a job description or provide a link. If left empty, nothing will be sent.</p>
+                <textarea
+                  placeholder="Paste job description (optional)"
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  rows={5}
+                  style={{ width: '100%', marginTop: '8px' }}
+                />
+              </div>
+              
+              {/* Removed duplicate Start Interview button (mic emoji) to keep a single start entry point */}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {!inInterview && (
+        <div className="voice-controls">
+          <label htmlFor="volume">Voice Volume:</label>
+          <input
+            type="range"
+            id="volume"
+            min="0.5"
+            max="1.5"
+            step="0.1"
+            value={volume}
+            onChange={handleVolumeChange}
+          />
+          <span>{volume.toFixed(1)}</span>
+        </div>
+      )}
+
+      <div className="buttons">
+        {currentIndex === -1 && (
+          <button
+            id="start"
+            className="button start-interview-btn"
+            onClick={handleProceed}
+            disabled={isGeneratingQuestions || startClicked || script.length === 0}
+            aria-label="Start Interview"
+          >
+            <div className="bubble-layer bubble-1" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-2" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-3" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-4" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-5" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-6" aria-hidden="true"></div>
+            <div className="bubble-layer bubble-7" aria-hidden="true"></div>
+            <span>Start Interview</span>
+          </button>
+        )}
+        {currentIndex >= script.length && !isRecording && !isSaving && (
+          <button 
+            id="restart" 
+            onClick={() => {
+              setCurrentIndex(-1);
+              setShowAnswer(false);
+              stopSpeaking();
+              setStartClicked(false);
+            }}
+          >
+            Restart Interview
+          </button>
+        )}
+        {/* Recommend button is shown inside right pane during interview */}
+      </div>
+
+      {script.length > 0 && !isUploadingResume && !inInterview && currentIndex >= 0 && (
+        <div className="progress">
+          <div>
+            {currentIndex >= script.length 
+              ? `Interview Completed - ${script.length} questions answered`
+              : `Question ${currentIndex + 1} of ${script.length}`
+            }
+          </div>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill"
+              style={{ 
+                width: `${currentIndex >= script.length 
+                  ? 100
+                  : currentIndex >= 0 
+                    ? ((currentIndex + 1) / script.length) * 100 
+                    : 0}%` 
+              }}
+            ></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;

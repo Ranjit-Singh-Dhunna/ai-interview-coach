@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import AstronautLoader from './components/AstronautLoader';
 import './App.css';
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
   const [volume, setVolume] = useState(1.2);
   const [userTranscript, setUserTranscript] = useState('');
   const [audioURL, setAudioURL] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
@@ -419,23 +422,31 @@ function App() {
   
   const startInterview = async () => {
     console.log("Starting interview...");
-    // Always (re)generate questions on start as requested
-    await generateNewQuestions(resumePath);
-    // After questions refresh, start at Q1
-    if (currentIndex === -1 && script.length > 0) {
+    setShowLoader(true);
+    
+    try {
+      // Always (re)generate questions on start as requested
+      await generateNewQuestions(resumePath);
+      
+      // Reset interview state
       setCurrentIndex(0);
       setShowAnswer(false);
-      speakQuestion(script[0].question);
-      console.log("Started interview with first question");
-    } else {
-      // In case script reload is slightly delayed, try a short retry
-      setTimeout(() => {
-        if (script.length > 0 && currentIndex === -1) {
-          setCurrentIndex(0);
-          setShowAnswer(false);
-          speakQuestion(script[0].question);
-        }
-      }, 600);
+      setUserTranscript('');
+      setAudioURL('');
+      setAnalysisResult(null);
+      setSampleAnswer('');
+      
+      // Small delay to show the loader
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Start with the first question
+      if (script.length > 0) {
+        speakQuestion(script[0].question);
+      }
+    } catch (error) {
+      console.error("Error starting interview:", error);
+    } finally {
+      setShowLoader(false);
     }
   };
 
@@ -718,6 +729,11 @@ function App() {
 
 
   
+  // Show loader if loading
+  if (showLoader) {
+    return <AstronautLoader />;
+  }
+
   return (
     <div className={`interview-container${inInterview ? ' two-col' : ''}`}>
       {!inInterview }
@@ -736,15 +752,17 @@ function App() {
               <h1 style={{ marginTop: 0, marginBottom: 8 }}>Interview Practice</h1>
             </div>
             {/* Live camera preview for confidence only; video is not recorded */}
-            <video
-              ref={videoRef}
-              className="big-video"
-              autoPlay
-              muted
-              playsInline
-            />
-            <div style={{ fontSize: '0.9em', color: 'var(--text-muted, #666)', marginTop: '6px' }}>
-              Live preview only (not recorded)
+            <div className="video-container">
+              <video
+                ref={videoRef}
+                className="big-video"
+                autoPlay
+                playsInline
+                muted
+              />
+              <div style={{ fontSize: '0.9em', color: 'var(--text-muted, #666)', marginTop: '6px' }}>
+                Live preview only (not recorded)
+              </div>
             </div>
             {videoError && (
               <div className="error-message" style={{ marginTop: '6px' }}>{videoError}</div>

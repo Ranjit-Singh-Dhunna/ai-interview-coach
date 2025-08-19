@@ -175,3 +175,13 @@ Timestamp: 2025-08-19T04:58:42.296Z
 Question: "I see you have experience with multiple programming languages, including Python, Java, and JavaScript. Can you discuss which language you prefer for web development and why?"
 Transcript: Hi.
 
+---
+Timestamp: 2025-08-19T06:05:08.558Z
+Question: "Hi Ranjit, it's great to meet you! I appreciate you taking the time to interview with us today. Let's dive into your experience. Can you tell me more about the DRIP GENIUS project? What were some of the biggest challenges you faced while implementing the real-time web-based system, and how did you overcome them?"
+Transcript: What the hell? Oh hell no bro, oh hell no. Absolutely it's good to be here at the Rapigenius. Hi, hi, hi.
+
+---
+Timestamp: 2025-08-19T06:05:32.172Z
+Question: "I see that you developed an automated invoicing system with Click2Bill using Google Apps Script. Can you explain how you approached the backend logic for generating unique invoice numbers and the process of converting templates into PDFs?"
+Transcript: Oh my god, you seriously wanna do that? Absolute rush, made it in voice number, oh my god, that's a plus.
+
