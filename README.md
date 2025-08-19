@@ -40,6 +40,18 @@ An **end-to-end, privacy-conscious interview practice app**. Upload your resume,
    - Click "Show Suggested Answer" → STAR-style guidance
 
 ---
+## 🎥 Demo
+
+<p align="center">
+  <a href="https://youtu.be/LjIaYI_8Rxg" target="_blank">
+    <img src="https://img.youtube.com/vi/LjIaYI_8Rxg/hqdefault.jpg" alt="Watch Demo" width="700"/>
+  </a>
+</p>
+
+> 🎬 Click the image above to watch the full demo (1:08).
+
+---
+
 
 ## 🏗 Architecture
 **Backend (Flask, port 5008)**  
