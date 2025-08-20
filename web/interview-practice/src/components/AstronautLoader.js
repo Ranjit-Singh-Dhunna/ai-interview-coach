@@ -44,6 +44,7 @@ const AstronautLoader = () => {
           <span className="loader-letter">a</span>
           <span className="loader-letter">l</span>
           <span className="loader-letter">y</span>
+          <span className="loader-letter">s</span>
           <span className="loader-letter">i</span>
           <span className="loader-letter">n</span>
           <span className="loader-letter">g</span>
