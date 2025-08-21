@@ -42,13 +42,15 @@ An **end-to-end, privacy-conscious interview practice app**. Upload your resume,
 ---
 ## 🎥 Demo
 
-<p align="center">
-  <a href="https://youtu.be/LjIaYI_8Rxg" target="_blank">
-    <img src="https://img.youtube.com/vi/LjIaYI_8Rxg/hqdefault.jpg" alt="Watch Demo" width="700"/>
+<div style="text-align: center;">
+  <a href="https://youtu.be/zAWmCEtYeVw" target="_blank">
+    <img src="https://img.youtube.com/vi/zAWmCEtYeVw/hqdefault.jpg" 
+         alt="Watch Demo" width="700">
   </a>
-</p>
+</div>
 
-> 🎬 Click the image above to watch the full demo (1:08).
+
+> 🎬 Click the image above to watch the full demo (4:20).
 
 ---
 
