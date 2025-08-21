@@ -1348,9 +1348,7 @@ button.recording {
 /* Enhanced Analysis Result Styles */
 .rating-section {
   background: rgba(255, 255, 255, 0.15);
-  padding: 15px;
   border-radius: 10px;
-  margin-bottom: 20px;
   text-align: center;
   backdrop-filter: blur(10px);
 }
@@ -1376,7 +1374,7 @@ button.recording {
 }
 
 .improvements-section h4 {
-  color: #fdcb6e;
+  color: var(--accent-primary);
   margin-top: 0;
   font-size: 1.2em;
 }
@@ -1423,7 +1421,7 @@ button.recording {
 
 .feedback-content h4 {
   margin: 0;
-  color: #fff;
+  color: var(--accent-primary);
   font-size: 1.2em;
 }
 
@@ -1470,14 +1468,14 @@ button.recording {
   max-height: none;
   overflow: visible;
   line-height: 1.6;
-  background: rgba(0, 0, 0, 0.35);
+  background: color-mix(in oklab, var(--accent-primary) 8%, var(--surface) 92%);
   border-radius: 10px;
   padding: 16px;
   position: relative;
 }
 
 .feedback-text.expanded {
-  max-height: none;
+  max-height: 50vh; /* Constrain height so user can scroll */
   overflow-y: auto;
 }
 
@@ -1486,21 +1484,22 @@ button.recording {
 }
 
 .feedback-text.expanded::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklab, var(--accent-primary) 6%, transparent);
   border-radius: 5px;
 }
 
 .feedback-text.expanded::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5));
+  background: color-mix(in oklab, var(--accent-primary) 45%, #cccccc 55%);
   border-radius: 5px;
 }
 
 .feedback-text.expanded::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7));
+  background: color-mix(in oklab, var(--accent-primary) 55%, #bbbbbb 45%);
 }
 
 .feedback-full-content {
-  color: white;
+  color: var(--text);
+  background: transparent; /* Parent provides themed background */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -1512,10 +1511,10 @@ button.recording {
 }
 
 .feedback-heading {
-  color: #ffeaa7;
+  color: var(--accent-primary);
   margin: 20px 0 12px 0;
   font-weight: 700;
-  border-bottom: 2px solid rgba(255, 234, 167, 0.3);
+  border-bottom: 2px solid color-mix(in oklab, var(--accent-primary) 35%, transparent);
   padding-bottom: 8px;
 }
 
@@ -1531,7 +1530,7 @@ button.recording {
 .feedback-list li {
   margin-bottom: 8px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text);
 }
 
 .feedback-list ul, .feedback-list ol {
@@ -1540,17 +1539,8 @@ button.recording {
 }
 
 .feedback-gradient-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(transparent, rgba(240, 147, 251, 0.9));
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 15px;
-  border-radius: 0 0 10px 10px;
+  /* Disabled to prevent content clipping over feedback text */
+  display: none;
 }
 
 .show-more-btn {
@@ -1795,7 +1785,7 @@ button.recording {
 
   .analysis-results {
     /* keep gradient but ensure readable text */
-    color: #ffffff;
+    color: var(--text);
   }
 
   .feedback-content { background: rgba(255, 255, 255, 0.06); }
@@ -1819,7 +1809,7 @@ button.recording {
   margin: 2vh auto;
   border-radius: 16px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto; /* Allow scrolling so long feedback isn't clipped */
 }
 
 @media (max-width: 768px) {

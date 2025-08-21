@@ -714,22 +714,35 @@ function App() {
       }
       
       const result = await response.json();
-      console.log('Analysis completed:', result);
-      
+      const fullFb = result.full_feedback || result.feedback || result.feedback_preview || '';
+      let derivedRating = null;
+      try {
+        // Support multiple label variants, e.g., "Overall Rating: 7/10" or "Interview Performance Rating: 7/10"
+        const labelRegex = /(?:Overall|Interview\s*Performance)\s*Rating\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*\/\s*10/i;
+        let m = fullFb.match(labelRegex);
+        if (!m) {
+          // Fallback: any standalone X/10 where X is 0-10 (greedy last match could be noisy; acceptable as fallback)
+          m = fullFb.match(/\b([0-9](?:\.[0-9])?|10)\s*\/\s*10\b/);
+        }
+        if (m && m[1]) {
+          derivedRating = `${m[1]}/10`;
+        }
+      } catch (_) {
+        // no-op if parsing fails
+      }
       setAnalysisResult({
-        feedback: result.feedback,
+        feedback: fullFb,
         feedbackPath: result.feedback_path,
         linksAnalyzed: result.links_analyzed,
-        rating: result.rating || 'N/A',
+        rating: result.rating || derivedRating || 'N/A',
         strengths: result.strengths || [],
         improvements: result.improvements || []
       });
       setShowSpacecraftLoader(false);
       
-      // Automatically cleanup user data after providing feedback for privacy
       setTimeout(() => {
         cleanupUserData();
-      }, 2000); // Small delay to ensure feedback is displayed first
+      }, 2000);
       
     } catch (error) {
       console.error('Error analyzing interview:', error);
@@ -945,7 +958,7 @@ function App() {
               <div className="analysis-result">
                 
 
-                {analysisResult.rating && (
+                {analysisResult.rating && analysisResult.rating !== 'N/A' && (
                   <div className="rating-section">
                     <h4>🎆 Overall Rating: {analysisResult.rating}</h4>
                   </div>
